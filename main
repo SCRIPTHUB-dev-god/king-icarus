@@ -229,7 +229,7 @@ local babftGroupBox = Tab:AddRightGroupbox("build a boat", "sailboat")
 
 local list4 = {
     {name = "luau.pro", url = "https://raw.githubusercontent.com/TheRealAsu/Luau.pro-utils/main/Loader", auto_execute = false},
-    {name = "kaitun babft", url = "https://pastebin.com/raw/MSJeBNV1", auto_execute = false},
+    {name = "kaitun babft", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/kaitun/refs/heads/main/game", auto_execute = false},
 }
 
 for _, item in ipairs(list4) do
@@ -272,7 +272,8 @@ local evdGroupBox = Tab:AddLeftGroupbox("evade", "sport-shoe")
 
 local list5 = {
     {name = "Yin Yang Hub", url = "https://raw.githubusercontent.com/yesimsoul/Yin-Yang-Hub/refs/heads/main/evade", auto_execute = false},
-    {name = "kaitun babft", url = "https://raw.githubusercontent.com/gumanba/Scripts/main/EvadeEvent", auto_execute = false},
+    {name = "event evade", url = "https://raw.githubusercontent.com/gumanba/Scripts/main/EvadeEvent", auto_execute = false},
+    {name = "kaitun evade", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/kaitun/refs/heads/main/game", auto_execute = false},
 }
 
 for _, item in ipairs(list5) do
@@ -498,7 +499,7 @@ setGroupBox:AddLabel("restart ui")
 setGroupBox:AddButton({
     Text = "restart",
     Func = function()
-        print("Button clicked!")
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/main/main",true))()
     end
 })
 

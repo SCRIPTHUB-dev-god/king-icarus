@@ -21,9 +21,43 @@ local SavedData = LoadConfig()
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/Obsidian/refs/heads/main/Library.lua"))()
 
+local Loading = Library:CreateLoading({
+    Title = "mspaint",
+    Icon = 95816097006870,
+    TotalSteps = 4
+})
+ 
+-- Loading...
+Loading:SetMessage("Initializing...")
+Loading:SetDescription("Waiting for game to load...")
+task.wait(1)
+ 
+Loading:SetCurrentStep(1)
+Loading:SetDescription("Loading configuration...")
+task.wait(1)
+ 
+-- Show sidebar with information
+Loading:SetCurrentStep(2)
+Loading:ShowSidebarPage(true)
+Loading.Sidebar:AddLabel("wellcome to Icarus game hub")
+Loading.Sidebar:AddLabel("credit by")
+Loading.Sidebar:AddLabel("• mspaint")
+Loading.Sidebar:AddLabel("• Icarus community")
+Loading.Sidebar:AddLabel("others")
+Loading.Sidebar:AddLabel("-- version Icarus game hub --")
+Loading.Sidebar:AddLabel("version : 1.0.5")
+task.wait(1)
+ 
+Loading:SetCurrentStep(3)
+Loading:SetDescription("Ready to start!")
+task.wait(1)
+ 
+Loading:SetCurrentStep(4)
+Loading:Continue() -- Destroys the loader and opens the main window
+
 local Window = Library:CreateWindow({
     Title = "ICARUS HUB",
-    Footer = "version:1.0",
+    Footer = "universal script/version 1.0.5",
     NotifySide = "Right",
 })
 
@@ -499,6 +533,7 @@ setGroupBox:AddLabel("restart ui")
 setGroupBox:AddButton({
     Text = "restart",
     Func = function()
+        script.Parent:Destroy()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/main/main",true))()
     end
 })
@@ -555,7 +590,7 @@ setGroupBox:AddButton({
 
 local seGroupBox = Tab:AddRightGroupbox("credits", "clipboard")
 
-seGroupBox:AddLabel("• credits by")
+seGroupBox:AddLabel("credits by")
 
 seGroupBox:AddLabel("• ICARUS hub")
 

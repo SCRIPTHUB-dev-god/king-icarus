@@ -22,8 +22,7 @@ local SavedData = LoadConfig()
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/Obsidian/refs/heads/main/Library.lua"))()
 
 local Loading = Library:CreateLoading({
-    Title = "mspaint",
-    Icon = 95816097006870,
+    Title = "Icarus game hub",
     TotalSteps = 4
 })
  
@@ -43,7 +42,7 @@ Loading.Sidebar:AddLabel("wellcome to Icarus game hub")
 Loading.Sidebar:AddLabel("credit by")
 Loading.Sidebar:AddLabel("• mspaint")
 Loading.Sidebar:AddLabel("• Icarus community")
-Loading.Sidebar:AddLabel("others")
+Loading.Sidebar:AddLabel("• others")
 Loading.Sidebar:AddLabel("-- version Icarus game hub --")
 Loading.Sidebar:AddLabel("version : 1.0.5")
 task.wait(1)
@@ -56,7 +55,7 @@ Loading:SetCurrentStep(4)
 Loading:Continue() -- Destroys the loader and opens the main window
 
 local Window = Library:CreateWindow({
-    Title = "ICARUS HUB",
+    Title = "ICARUS GAME HUB",
     Footer = "universal script/version 1.0.5",
     NotifySide = "Right",
 })
@@ -533,8 +532,8 @@ setGroupBox:AddLabel("restart ui")
 setGroupBox:AddButton({
     Text = "restart",
     Func = function()
-        script.Parent:Destroy()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/main/main",true))()
+        Library:Unload()
     end
 })
 

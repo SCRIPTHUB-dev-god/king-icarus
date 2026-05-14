@@ -1,5 +1,5 @@
 local HttpService = game:GetService("HttpService")
-local ConfigFile = "IcarusHub_AutoSave.json"
+local ConfigFile = "king_icarus.json"
 
 local function LoadConfig()
     if isfile and isfile(ConfigFile) then
@@ -19,7 +19,11 @@ end
 
 local SavedData = LoadConfig()
 
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/Obsidian/refs/heads/main/Library.lua"))()
+local success, Library = pcall(function()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/Obsidian/refs/heads/main/Library.lua"))()
+end)
+
+if not success then return end
 
 local Loading = Library:CreateLoading({
     Title = "Icarus game hub",
@@ -52,12 +56,31 @@ Loading:SetDescription("Ready to start!")
 task.wait(1)
  
 Loading:SetCurrentStep(4)
-Loading:Continue() -- Destroys the loader and opens the main window
+Loading:Continue()
 
 local Window = Library:CreateWindow({
-    Title = "ICARUS GAME HUB",
-    Footer = "universal script/version 1.0.5",
-    NotifySide = "Right",
+    Title = "ICARUS",
+    Footer = "universal script/version 1.1.0",
+    Center = true,
+    AutoShow = false,
+    TabPadding = 8,
+    MenuFadeTime = 0.2,
+    CornerRadius = 4,
+    Icon = "star"
+})
+
+Window:AddDialog("EmptyDialogueIdx", {
+    Title = "wellcome to ICARUS games hub",
+    Description = "thanks you for Execute this script",
+    AutoDismiss = true,
+    OutsideClickDismiss = true,
+    FooterButtons = {
+        Confirm = {
+            Title = "Okay",
+            Variant = "Primary",
+            Callback = function() end
+        }
+    }
 })
 
 local Tab = Window:AddTab("support", "info")
@@ -76,12 +99,21 @@ infoGroupBox:AddButton("Copy Discord", function()
     end
 end)
 
+local Tab = Window:AddTab("Main", "joystick")
+local LeftTabBox = Tab:AddLeftTabbox()
+local SubTab1 = LeftTabBox:AddTab("", "star")
+local SubTab2 = LeftTabBox:AddTab("", "sprout")
+local SubTab3 = LeftTabBox:AddTab("", "apple")
+local SubTab4 = LeftTabBox:AddTab("", "sailboat")
+local SubTab5 = LeftTabBox:AddTab("", "sport-shoe")
+local SubTab6 = LeftTabBox:AddTab("", "sailboat")
+local SubTab7 = LeftTabBox:AddTab("", "bird")
 
-local Tab = Window:AddTab("Main", "laptop")
+local RightTabBox = Tab:AddRightTabbox()
+local SubTab8 = RightTabBox:AddTab("", "shield")
+local SubTab9 = RightTabBox:AddTab("", "swords")
 
-local LeftGroupBox = Tab:AddLeftGroupbox("best hub", "laptop")
-
-local list1 = {
+local list = {
     {name = "speed hub x", url = "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", auto_execute = false},
     {name = "chiyo hub", url = "https://raw.githubusercontent.com/kaisenlmao/loader/refs/heads/main/chiyo.lua", auto_execute = false},
     {name = "solix hub", url = "https://raw.githubusercontent.com/bao8jl/solixhub/main/loader", auto_execute = false},
@@ -89,45 +121,44 @@ local list1 = {
     {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
 }
 
-for _, item in ipairs(list1) do
-    if SavedData[item.name] ~= nil then
-        item.auto_execute = SavedData[item.name]
-    end
+SubTab1:AddLabel("• bests hub")
 
-    LeftGroupBox:AddLabel(item.name)
+SubTab1:AddDivider()
 
-    LeftGroupBox:AddButton({
-        Text = "Execute",
+for i, item in ipairs(list) do
+    local toggleName = "AutoExec_" .. item.name
+    local isAutoExec = SavedData[toggleName] or false
+
+    SubTab1:AddLabel(item.name)
+    
+    SubTab1:AddButton({
+        Text = "Load Script",
         Func = function()
-            local success, err = pcall(function() loadstring(game:HttpGet(item.url))() end)
-            if not success then warn(err) end
+            loadstring(game:HttpGet(item.url))()
         end
     })
 
-    local id = "Auto_".. item.name:gsub("%W+", "")
-    local toggle = LeftGroupBox:AddToggle(id, {
+    local MyToggle = SubTab1:AddToggle(toggleName, {
         Text = "Auto Execute",
-        Default = item.auto_execute,
+        Default = isAutoExec
     })
 
-    toggle:OnChanged(function(state)
-        item.auto_execute = state
-        SaveConfig(item.name, state)
-        print(item.name.. " auto save: ".. tostring(state))
+    MyToggle:OnChanged(function()
+        SaveConfig(toggleName, MyToggle.Value)
     end)
 
-    if item.auto_execute then
+    if isAutoExec then
         task.spawn(function()
-            pcall(function() loadstring(game:HttpGet(item.url))() end)
+            pcall(function()
+                loadstring(game:HttpGet(item.url))()
+            end)
         end)
     end
 
-    LeftGroupBox:AddDivider()
+    SubTab1:AddDivider()
 end
 
-local gagGroupBox = Tab:AddRightGroupbox("grow a garden", "sprout")
-
-local list2 = {
+local list1 = {
     {name = "speed hub x ", url = "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", auto_execute = false},
     {name = "wish hub x", url = "https://raw.githubusercontent.com/dy1zn4t/WisHubX/refs/heads/main/loader", auto_execute = false},
     {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
@@ -135,61 +166,44 @@ local list2 = {
     {name = "thunderz hub", url = "https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua", auto_execute = false},
 }
 
-for _, item in ipairs(list2) do
-    if SavedData[item.name] ~= nil then
-        item.auto_execute = SavedData[item.name]
-    end
+SubTab2:AddLabel("• grow a garden hub")
 
-    gagGroupBox:AddLabel(item.name)
+SubTab2:AddDivider()
 
-    gagGroupBox:AddButton({
-        Text = "Execute",
+for i, item in ipairs(list1) do
+    local toggleName = "AutoExec_" .. item.name
+    local isAutoExec = SavedData[toggleName] or false
+
+    SubTab2:AddLabel(item.name)
+    
+    SubTab2:AddButton({
+        Text = "Load Script",
         Func = function()
-            local success, err = pcall(function() loadstring(game:HttpGet(item.url))() end)
-            if not success then warn(err) end
+            loadstring(game:HttpGet(item.url))()
         end
     })
 
-    local id = "Auto_".. item.name:gsub("%W+", "")
-    local toggle = gagGroupBox:AddToggle(id, {
+    local MyToggle = SubTab2:AddToggle(toggleName, {
         Text = "Auto Execute",
-        Default = item.auto_execute,
+        Default = isAutoExec
     })
 
-    toggle:OnChanged(function(state)
-        item.auto_execute = state
-        SaveConfig(item.name, state)
-        print(item.name.. " auto save: ".. tostring(state))
+    MyToggle:OnChanged(function()
+        SaveConfig(toggleName, MyToggle.Value)
     end)
 
-    if item.auto_execute then
+    if isAutoExec then
         task.spawn(function()
-            pcall(function() loadstring(game:HttpGet(item.url))() end)
+            pcall(function()
+                loadstring(game:HttpGet(item.url))()
+            end)
         end)
     end
 
-    gagGroupBox:AddDivider()
+    SubTab2:AddDivider()
 end
 
--- Tambahkan fungsi pembantu ini di bagian atas (di luar loop) agar rapi
-local function ExecuteScript(input)
-    local success, err = pcall(function()
-        -- Cek apakah input adalah URL (dimulai dengan http)
-        if input:sub(1, 4) == "http" and not input:find(" ") then
-            loadstring(game:HttpGet(input))()
-        else
-            -- Jika bukan URL, jalankan sebagai kode langsung
-            loadstring(input)()
-        end
-    end)
-    if not success then 
-        warn("Execute Error: " .. tostring(err)) 
-    end
-end
-
-local bfGroupBox = Tab:AddLeftGroupbox("blox fruit", "apple")
-
-local list3 = {
+local list2 = {
     {
         name = "blue x hub", 
         url = [[_G.SaveConfig = true; loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-BlueX/BlueX-Hub/refs/heads/main/Main.lua"))()]], 
@@ -220,223 +234,214 @@ local list3 = {
     {name = "moonlight hub", url = "https://raw.githubusercontent.com/Dev-Moonlight/Moonlight/refs/heads/main/Main", auto_execute = false},
 }
 
-for _, item in ipairs(list3) do
-    -- Sinkronisasi Auto Save
-    if SavedData[item.name] ~= nil then
-        item.auto_execute = SavedData[item.name]
-    end
+SubTab3:AddLabel("• Blox Fruit hub")
 
-    bfGroupBox:AddLabel(item.name)
+SubTab3:AddDivider()
 
-    bfGroupBox:AddButton({
-        Text = "Execute",
+for i, item in ipairs(list2) do
+    local toggleName = "AutoExec_" .. item.name
+    local isAutoExec = SavedData[toggleName] or false
+
+    SubTab3:AddLabel(item.name)
+    
+    SubTab3:AddButton({
+        Text = "Load Script",
         Func = function()
-            print("Executing: ".. item.name)
-            ExecuteScript(item.url)
+            loadstring(game:HttpGet(item.url))()
         end
     })
 
-    local id = "Auto_".. item.name:gsub("%W+", "")
-    local toggle = bfGroupBox:AddToggle(id, {
+    local MyToggle = SubTab3:AddToggle(toggleName, {
         Text = "Auto Execute",
-        Default = item.auto_execute,
+        Default = isAutoExec
     })
 
-    toggle:OnChanged(function(state)
-        item.auto_execute = state
-        SaveConfig(item.name, state) -- Fungsi SaveConfig dari kode sebelumnya
-        print(item.name.. " auto save: ".. tostring(state))
+    MyToggle:OnChanged(function()
+        SaveConfig(toggleName, MyToggle.Value)
     end)
 
-    -- Jalankan otomatis jika true
-    if item.auto_execute then
+    if isAutoExec then
         task.spawn(function()
-            ExecuteScript(item.url)
+            pcall(function()
+                loadstring(game:HttpGet(item.url))()
+            end)
         end)
     end
 
-    bfGroupBox:AddDivider()
+    SubTab3:AddDivider()
 end
 
-local babftGroupBox = Tab:AddRightGroupbox("build a boat", "sailboat")
-
-local list4 = {
+local list3 = {
     {name = "luau.pro", url = "https://raw.githubusercontent.com/TheRealAsu/Luau.pro-utils/main/Loader", auto_execute = false},
     {name = "kaitun babft", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/kaitun/refs/heads/main/game", auto_execute = false},
 }
 
-for _, item in ipairs(list4) do
-    if SavedData[item.name] ~= nil then
-        item.auto_execute = SavedData[item.name]
-    end
+SubTab4:AddLabel("• build a boat hub")
 
-    babftGroupBox:AddLabel(item.name)
+SubTab4:AddDivider()
 
-    babftGroupBox:AddButton({
-        Text = "Execute",
+for i, item in ipairs(list3) do
+    local toggleName = "AutoExec_" .. item.name
+    local isAutoExec = SavedData[toggleName] or false
+
+    SubTab4:AddLabel(item.name)
+    
+    SubTab4:AddButton({
+        Text = "Load Script",
         Func = function()
-            local success, err = pcall(function() loadstring(game:HttpGet(item.url))() end)
-            if not success then warn(err) end
+            loadstring(game:HttpGet(item.url))()
         end
     })
 
-    local id = "Auto_".. item.name:gsub("%W+", "")
-    local toggle = babftGroupBox:AddToggle(id, {
+    local MyToggle = SubTab4:AddToggle(toggleName, {
         Text = "Auto Execute",
-        Default = item.auto_execute,
+        Default = isAutoExec
     })
 
-    toggle:OnChanged(function(state)
-        item.auto_execute = state
-        SaveConfig(item.name, state)
-        print(item.name.. " auto save: ".. tostring(state))
+    MyToggle:OnChanged(function()
+        SaveConfig(toggleName, MyToggle.Value)
     end)
 
-    if item.auto_execute then
+    if isAutoExec then
         task.spawn(function()
-            pcall(function() loadstring(game:HttpGet(item.url))() end)
+            pcall(function()
+                loadstring(game:HttpGet(item.url))()
+            end)
         end)
     end
 
-    babftGroupBox:AddDivider()
+    SubTab4:AddDivider()
 end
 
-local evdGroupBox = Tab:AddLeftGroupbox("evade", "sport-shoe")
-
-local list5 = {
+local list4 = {
     {name = "Yin Yang Hub", url = "https://raw.githubusercontent.com/yesimsoul/Yin-Yang-Hub/refs/heads/main/evade", auto_execute = false},
     {name = "event evade", url = "https://raw.githubusercontent.com/gumanba/Scripts/main/EvadeEvent", auto_execute = false},
     {name = "kaitun evade", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/kaitun/refs/heads/main/game", auto_execute = false},
 }
 
-for _, item in ipairs(list5) do
-    if SavedData[item.name] ~= nil then
-        item.auto_execute = SavedData[item.name]
-    end
+SubTab5:AddLabel("• evade hub")
 
-    evdGroupBox:AddLabel(item.name)
+SubTab5:AddDivider()
 
-    evdGroupBox:AddButton({
-        Text = "Execute",
+for i, item in ipairs(list4) do
+    local toggleName = "AutoExec_" .. item.name
+    local isAutoExec = SavedData[toggleName] or false
+
+    SubTab5:AddLabel(item.name)
+    
+    SubTab5:AddButton({
+        Text = "Load Script",
         Func = function()
-            local success, err = pcall(function() loadstring(game:HttpGet(item.url))() end)
-            if not success then warn(err) end
+            loadstring(game:HttpGet(item.url))()
         end
     })
 
-    local id = "Auto_".. item.name:gsub("%W+", "")
-    local toggle = evdGroupBox:AddToggle(id, {
+    local MyToggle = SubTab5:AddToggle(toggleName, {
         Text = "Auto Execute",
-        Default = item.auto_execute,
+        Default = isAutoExec
     })
 
-    toggle:OnChanged(function(state)
-        item.auto_execute = state
-        SaveConfig(item.name, state)
-        print(item.name.. " auto save: ".. tostring(state))
+    MyToggle:OnChanged(function()
+        SaveConfig(toggleName, MyToggle.Value)
     end)
 
-    if item.auto_execute then
+    if isAutoExec then
         task.spawn(function()
-            pcall(function() loadstring(game:HttpGet(item.url))() end)
+            pcall(function()
+                loadstring(game:HttpGet(item.url))()
+            end)
         end)
     end
 
-    evdGroupBox:AddDivider()
+    SubTab5:AddDivider()
 end
 
-local spGroupBox = Tab:AddLeftGroupbox("sailor piece", "sailboat")
-
-local list6 = {
+local list5 = {
     {name = "solix hub", url = "https://raw.githubusercontent.com/bao8jl/solixhub/main/loader", auto_execute = false},
     {name = "chiyo hub", url = "https://raw.githubusercontent.com/kaisenlmao/loader/refs/heads/main/chiyo.lua", auto_execute = false},
     {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
 }
 
-for _, item in ipairs(list6) do
-    if SavedData[item.name] ~= nil then
-        item.auto_execute = SavedData[item.name]
-    end
+SubTab6:AddLabel("• sailor piece hub")
 
-    spGroupBox:AddLabel(item.name)
+SubTab6:AddDivider()
 
-    spGroupBox:AddButton({
-        Text = "Execute",
+for i, item in ipairs(list5) do
+    local toggleName = "AutoExec_" .. item.name
+    local isAutoExec = SavedData[toggleName] or false
+
+    SubTab6:AddLabel(item.name)
+    
+    SubTab6:AddButton({
+        Text = "Load Script",
         Func = function()
-            local success, err = pcall(function() loadstring(game:HttpGet(item.url))() end)
-            if not success then warn(err) end
+            loadstring(game:HttpGet(item.url))()
         end
     })
 
-    local id = "Auto_".. item.name:gsub("%W+", "")
-    local toggle = spGroupBox:AddToggle(id, {
+    local MyToggle = SubTab6:AddToggle(toggleName, {
         Text = "Auto Execute",
-        Default = item.auto_execute,
+        Default = isAutoExec
     })
 
-    toggle:OnChanged(function(state)
-        item.auto_execute = state
-        SaveConfig(item.name, state)
-        print(item.name.. " auto save: ".. tostring(state))
+    MyToggle:OnChanged(function()
+        SaveConfig(toggleName, MyToggle.Value)
     end)
 
-    if item.auto_execute then
+    if isAutoExec then
         task.spawn(function()
-            pcall(function() loadstring(game:HttpGet(item.url))() end)
+            pcall(function()
+                loadstring(game:HttpGet(item.url))()
+            end)
         end)
     end
 
-    spGroupBox:AddDivider()
+    SubTab6:AddDivider()
 end
 
-local bsGroupBox = Tab:AddRightGroupbox("bee swarm simulator", "bird")
-
-local list7 = {
+local list6 = {
     {name = "atlas hub", url = "https://rawscripts.net/raw/Bee-Swarm-Simulator-Atlas-49277", auto_execute = false},
     {name = "ronix hub", url = "https://api.luarmor.net/files/v3/loaders/fda9babd071d6b536a745774b6bc681c.lua", auto_execute = false},
 }
 
-for _, item in ipairs(list7) do
-    if SavedData[item.name] ~= nil then
-        item.auto_execute = SavedData[item.name]
-    end
+SubTab7:AddLabel("• Bee Swarm Simulator hub")
 
-    bsGroupBox:AddLabel(item.name)
+SubTab7:AddDivider()
 
-    bsGroupBox:AddButton({
-        Text = "Execute",
+for i, item in ipairs(list6) do
+    local toggleName = "AutoExec_" .. item.name
+    local isAutoExec = SavedData[toggleName] or false
+
+    SubTab7:AddLabel(item.name)
+    
+    SubTab7:AddButton({
+        Text = "Load Script",
         Func = function()
-            local success, err = pcall(function() loadstring(game:HttpGet(item.url))() end)
-            if not success then warn(err) end
+            loadstring(game:HttpGet(item.url))()
         end
     })
 
-    local id = "Auto_".. item.name:gsub("%W+", "")
-    local toggle = bsGroupBox:AddToggle(id, {
+    local MyToggle = SubTab7:AddToggle(toggleName, {
         Text = "Auto Execute",
-        Default = item.auto_execute,
+        Default = isAutoExec
     })
 
-    toggle:OnChanged(function(state)
-        item.auto_execute = state
-        SaveConfig(item.name, state)
-        print(item.name.. " auto save: ".. tostring(state))
+    MyToggle:OnChanged(function()
+        SaveConfig(toggleName, MyToggle.Value)
     end)
 
-    if item.auto_execute then
+    if isAutoExec then
         task.spawn(function()
-            pcall(function() loadstring(game:HttpGet(item.url))() end)
+            pcall(function()
+                loadstring(game:HttpGet(item.url))()
+            end)
         end)
     end
 
-    bsGroupBox:AddDivider()
+    SubTab7:AddDivider()
 end
 
-local Tab = Window:AddTab("others", "hammer")
-
-local adGroupBox = Tab:AddLeftGroupbox("admin Script", "shield")
-
-local list8 = {
+local list7 = {
     {name = "infinite yield", url = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", auto_execute = false},
     {name = "Nameless Admin", url = "https://raw.githubusercontent.com/ltseverydayyou/Nameless-Admin/main/Source.lua", auto_execute = false},
     {name = "vape v4", url = "https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/NewMainScript.lua", auto_execute = false},
@@ -444,83 +449,83 @@ local list8 = {
     {name = "AK ADMIN", url = "https://absent.wtf/AKADMIN.lua", auto_execute = false},
 }
 
-for _, item in ipairs(list8) do
-    if SavedData[item.name] ~= nil then
-        item.auto_execute = SavedData[item.name]
-    end
+SubTab8:AddLabel("• admin Script")
 
-    adGroupBox:AddLabel(item.name)
+SubTab8:AddDivider()
 
-    adGroupBox:AddButton({
-        Text = "Execute",
+for i, item in ipairs(list7) do
+    local toggleName = "AutoExec_" .. item.name
+    local isAutoExec = SavedData[toggleName] or false
+
+    SubTab8:AddLabel(item.name)
+    
+    SubTab8:AddButton({
+        Text = "Load Script",
         Func = function()
-            local success, err = pcall(function() loadstring(game:HttpGet(item.url))() end)
-            if not success then warn(err) end
+            loadstring(game:HttpGet(item.url))()
         end
     })
 
-    local id = "Auto_".. item.name:gsub("%W+", "")
-    local toggle = adGroupBox:AddToggle(id, {
+    local MyToggle = SubTab8:AddToggle(toggleName, {
         Text = "Auto Execute",
-        Default = item.auto_execute,
+        Default = isAutoExec
     })
 
-    toggle:OnChanged(function(state)
-        item.auto_execute = state
-        SaveConfig(item.name, state)
-        print(item.name.. " auto save: ".. tostring(state))
+    MyToggle:OnChanged(function()
+        SaveConfig(toggleName, MyToggle.Value)
     end)
 
-    if item.auto_execute then
+    if isAutoExec then
         task.spawn(function()
-            pcall(function() loadstring(game:HttpGet(item.url))() end)
+            pcall(function()
+                loadstring(game:HttpGet(item.url))()
+            end)
         end)
     end
 
-    adGroupBox:AddDivider()
+    SubTab8:AddDivider()
 end
-
-local aimGroupBox = Tab:AddRightGroupbox("aimbot", "user")
 
 local list8 = {
     {name = "aimbot pro", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/aimbot/refs/heads/main/main", auto_execute = false},
     {name = "aimbot mobile", url = "https://raw.githubusercontent.com/DanielHubll/DanielHubll/refs/heads/main/Aimbot%20Mobile", auto_execute = false},
 }
 
-for _, item in ipairs(list8) do
-    if SavedData[item.name] ~= nil then
-        item.auto_execute = SavedData[item.name]
-    end
+SubTab9:AddLabel("• aimbot Script")
 
-    aimGroupBox:AddLabel(item.name)
+SubTab9:AddDivider()
 
-    aimGroupBox:AddButton({
-        Text = "Execute",
+for i, item in ipairs(list8) do
+    local toggleName = "AutoExec_" .. item.name
+    local isAutoExec = SavedData[toggleName] or false
+
+    SubTab9:AddLabel(item.name)
+    
+    SubTab9:AddButton({
+        Text = "Load Script",
         Func = function()
-            local success, err = pcall(function() loadstring(game:HttpGet(item.url))() end)
-            if not success then warn(err) end
+            loadstring(game:HttpGet(item.url))()
         end
     })
 
-    local id = "Auto_".. item.name:gsub("%W+", "")
-    local toggle = aimGroupBox:AddToggle(id, {
+    local MyToggle = SubTab9:AddToggle(toggleName, {
         Text = "Auto Execute",
-        Default = item.auto_execute,
+        Default = isAutoExec
     })
 
-    toggle:OnChanged(function(state)
-        item.auto_execute = state
-        SaveConfig(item.name, state)
-        print(item.name.. " auto save: ".. tostring(state))
+    MyToggle:OnChanged(function()
+        SaveConfig(toggleName, MyToggle.Value)
     end)
 
-    if item.auto_execute then
+    if isAutoExec then
         task.spawn(function()
-            pcall(function() loadstring(game:HttpGet(item.url))() end)
+            pcall(function()
+                loadstring(game:HttpGet(item.url))()
+            end)
         end)
     end
 
-    aimGroupBox:AddDivider()
+    SubTab9:AddDivider()
 end
 
 local Tab = Window:AddTab("Setting", "settings")
@@ -601,6 +606,6 @@ seGroupBox:AddDivider()
 
 seGroupBox:AddLabel("logs update")
 
-seGroupBox:AddLabel("• release")
+seGroupBox:AddLabel("• upgrade group box")
 
-seGroupBox:AddLabel("• new games")
+seGroupBox:AddLabel("• new code")

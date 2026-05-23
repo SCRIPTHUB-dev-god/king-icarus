@@ -466,3 +466,23 @@ RunService.Stepped:Connect(function()
         bGyro.CFrame = CFrame.lookAt(root.Position, root.Position + camera.CFrame.LookVector)
     end
 end)
+
+Window:Divider()
+
+local Tab4 = Window:Tab({
+    Title = "setting",
+    Icon = "settings", -- optional
+    Locked = false,
+})
+
+local Button = Tab4:Button({
+    Title = "Advanced Button",
+    Color = Color3.fromHex("#a2ff30"), -- paint the button
+    Justify = "Center", -- align items in the center (Center or Between or Left or Right)
+    IconAlign = "Left", -- Left or Right of the text
+    Icon = "", -- removing icon
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/admin.lua" ,true))()
+        Window:Close()
+    end
+})

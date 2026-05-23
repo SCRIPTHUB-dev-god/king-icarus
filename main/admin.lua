@@ -187,7 +187,7 @@ local function setFreecam(state)
     end
 end
 
-TabExploits:Toggle({ Title = "Fly Camera", Callback = function(state)
+TabExploits:Toggle({ Title = "Fly", Callback = function(state)
     flyEnabled = state
     local char = player.Character
     local humanoid = char and char:FindFirstChildOfClass("Humanoid")
@@ -307,10 +307,10 @@ local savedParts = {}
 local selectedPartName = "None"
 local tpMode = "Teleport"
 
-local DropdownPart = TabPartTP:Dropdown({ Title = "Select Part", Values = {"None"}, Callback = function(v) selectedPartName = v end })
+local DropdownPart = TabPartTP:Dropdown({ Title = "Select locations", Values = {"None"}, Callback = function(v) selectedPartName = v end })
 local DropdownMode = TabPartTP:Dropdown({ Title = "Mode", Values = {"Teleport", "Tween"}, Value = "Teleport", Callback = function(v) tpMode = v end })
 
-TabPartTP:Button({ Title = "Execute (TP/Tween)", Color = Color3.fromHex("#00d4ff"), Callback = function()
+TabPartTP:Button({ Title = "teleport location", Color = Color3.fromHex("#00d4ff"), Callback = function()
     local char = player.Character
     local root = char and char:FindFirstChild("HumanoidRootPart")
     local target = workspace:FindFirstChild(selectedPartName)
@@ -320,9 +320,9 @@ TabPartTP:Button({ Title = "Execute (TP/Tween)", Color = Color3.fromHex("#00d4ff
     end
 end})
 
-TabPartTP:Button({ Title = "Create Invisible Part", Color = Color3.fromHex("#00d4ff"), Callback = function()
+TabPartTP:Button({ Title = "Create locations", Color = Color3.fromHex("#00d4ff"), Callback = function()
     local p = Instance.new("Part")
-    p.Name = "TP_Part_".. #savedParts + 1
+    p.Name = "go_location_".. #savedParts + 1
     p.Transparency = 1
     p.CanCollide = false
     p.Anchored = true

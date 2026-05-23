@@ -605,7 +605,7 @@ TabPlayer:Toggle({
             resetBtn.Size = UDim2.new(1, -24, 0, 24)
             resetBtn.Position = UDim2.fromOffset(12, 90)
             resetBtn.BackgroundColor3 = Color3.fromHex("#0f172a")
-            resetBtn.Text = "Reset"
+            resetBtn.Text = "Reset platform"
             resetBtn.TextColor3 = Color3.fromHex("#f0f9ff")
             resetBtn.TextSize = 12
             resetBtn.Font = Enum.Font.GothamSemibold

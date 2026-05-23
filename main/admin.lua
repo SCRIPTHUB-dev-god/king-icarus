@@ -483,6 +483,6 @@ local Button = Tab4:Button({
     Icon = "", -- removing icon
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/admin.lua" ,true))()
-        Window:Close()
+        Window:Destroy()
     end
 })

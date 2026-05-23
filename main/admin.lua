@@ -484,3 +484,338 @@ local Button = Tab4:Button({
         Window:Destroy()
     end
 })
+
+local TabPlayer = Section1:Tab({ Title = "Player", Icon = "user" })
+
+-- State
+local antiVoidEnabled = false
+local lastSafeCFrame = nil
+local autoVoidOffset = 50
+
+local antiKnockbackEnabled = false
+local knockbackConn = nil
+
+local customGui = nil
+local followerPart = nil
+local targetY = 0
+local showGuiActive = false
+
+local holdUp = false
+local holdDown = false
+local moveSpeed = 25
+
+-- Anti Void
+TabPlayer:Toggle({
+    Title = "Anti Void",
+    Callback = function(state)
+        antiVoidEnabled = state
+    end
+})
+
+-- Anti Knockback
+TabPlayer:Toggle({
+    Title = "Anti Knockback",
+    Callback = function(state)
+        antiKnockbackEnabled = state
+        local char = player.Character
+        if not char then return end
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if not humanoid or not root then return end
+
+        if state then
+            humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+            humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+            if knockbackConn then knockbackConn:Disconnect() end
+            knockbackConn = root.ChildAdded:Connect(function(child)
+                if antiKnockbackEnabled and (child:IsA("BodyVelocity") or child:IsA("BodyGyro") or child:IsA("BodyForce") or child:IsA("VectorForce")) then
+                    task.defer(function()
+                        if child and child.Parent then child:Destroy() end
+                    end)
+                end
+            end)
+        else
+            humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
+            humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+            if knockbackConn then knockbackConn:Disconnect() knockbackConn = nil end
+        end
+    end
+})
+
+TabPlayer:Divider()
+
+-- Show GUI
+TabPlayer:Toggle({
+    Title = "Show GUI",
+    Callback = function(state)
+        showGuiActive = state
+        if state then
+            local char = player.Character
+            local root = char and char:FindFirstChild("HumanoidRootPart")
+            local startY = root and (root.Position.Y - 3.5) or 50
+            targetY = startY
+
+            if followerPart then followerPart:Destroy() end
+            followerPart = Instance.new("Part")
+            followerPart.Name = "FollowerPart"
+            followerPart.Size = Vector3.new(6,1,6)
+            followerPart.Anchored = true
+            followerPart.CanCollide = true
+            followerPart.Material = Enum.Material.Neon
+            followerPart.Color = Color3.fromRGB(0,212,255)
+            followerPart.Transparency = 0.2
+            followerPart.TopSurface = Enum.SurfaceType.Smooth
+            followerPart.BottomSurface = Enum.SurfaceType.Smooth
+            if root then
+                followerPart.CFrame = CFrame.new(root.Position.X, startY, root.Position.Z)
+            end
+            followerPart.Parent = workspace
+
+            if customGui then customGui:Destroy() end
+            customGui = Instance.new("ScreenGui")
+            customGui.Name = "IcarusPlayerGUI"
+            customGui.ResetOnSpawn = false
+            customGui.Parent = playerGui
+
+            local shadow = Instance.new("Frame")
+            shadow.Name = "Shadow"
+            shadow.Size = UDim2.fromOffset(140, 170)
+            shadow.Position = UDim2.fromOffset(24, 24)
+            shadow.BackgroundColor3 = Color3.fromRGB(0,0,0)
+            shadow.BackgroundTransparency = 0.7
+            shadow.BorderSizePixel = 0
+            shadow.ZIndex = 0
+            shadow.Parent = customGui
+
+            local shadowCorner = Instance.new("UICorner")
+            shadowCorner.CornerRadius = UDim.new(0,12)
+            shadowCorner.Parent = shadow
+
+            local frame = Instance.new("Frame")
+            frame.Name = "Main"
+            frame.Size = UDim2.fromOffset(140, 170)
+            frame.Position = UDim2.fromOffset(20, 20)
+            frame.BackgroundColor3 = Color3.fromHex("#0a192f")
+            frame.BorderSizePixel = 0
+            frame.Active = true
+            frame.Parent = customGui
+
+            local frameCorner = Instance.new("UICorner")
+            frameCorner.CornerRadius = UDim.new(0,12)
+            frameCorner.Parent = frame
+
+            local stroke = Instance.new("UIStroke")
+            stroke.Color = Color3.fromHex("#38bdf8")
+            stroke.Thickness = 1.2
+            stroke.Transparency = 0.3
+            stroke.Parent = frame
+
+            local gradient = Instance.new("UIGradient")
+            gradient.Color = ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Color3.fromHex("#0a192f")),
+                ColorSequenceKeypoint.new(1, Color3.fromHex("#1e293b"))
+            }
+            gradient.Rotation = 90
+            gradient.Parent = frame
+
+            local title = Instance.new("TextLabel")
+            title.Size = UDim2.new(1, -16, 0, 24)
+            title.Position = UDim2.fromOffset(8, 8)
+            title.BackgroundTransparency = 1
+            title.Text = "Platform Control"
+            title.TextColor3 = Color3.fromHex("#f0f9ff")
+            title.TextSize = 15
+            title.Font = Enum.Font.GothamBold
+            title.TextXAlignment = Enum.TextXAlignment.Left
+            title.Parent = frame
+
+            local yLabel = Instance.new("TextLabel")
+            yLabel.Name = "YLabel"
+            yLabel.Size = UDim2.new(1, -16, 0, 18)
+            yLabel.Position = UDim2.fromOffset(8, 30)
+            yLabel.BackgroundTransparency = 1
+            yLabel.Text = "Y: 0.0"
+            yLabel.TextColor3 = Color3.fromHex("#94a3b8")
+            yLabel.TextSize = 12
+            yLabel.Font = Enum.Font.Gotham
+            yLabel.TextXAlignment = Enum.TextXAlignment.Left
+            yLabel.Parent = frame
+
+            local upBtn = Instance.new("TextButton")
+            upBtn.Name = "UpBtn"
+            upBtn.Size = UDim2.fromOffset(50,50)
+            upBtn.Position = UDim2.fromOffset(15, 55)
+            upBtn.BackgroundColor3 = Color3.fromHex("#1d4ed8")
+            upBtn.Text = "▲"
+            upBtn.TextColor3 = Color3.fromHex("#f0f9ff")
+            upBtn.TextScaled = true
+            upBtn.Font = Enum.Font.GothamBlack
+            upBtn.AutoButtonColor = false
+            upBtn.Parent = frame
+
+            local upCorner = Instance.new("UICorner")
+            upCorner.CornerRadius = UDim.new(0,10)
+            upCorner.Parent = upBtn
+
+            local upStroke = Instance.new("UIStroke")
+            upStroke.Color = Color3.fromHex("#38bdf8")
+            upStroke.Thickness = 1
+            upStroke.Parent = upBtn
+
+            local upGrad = Instance.new("UIGradient")
+            upGrad.Color = ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Color3.fromHex("#3d87ff")),
+                ColorSequenceKeypoint.new(1, Color3.fromHex("#1d4ed8"))
+            }
+            upGrad.Rotation = 90
+            upGrad.Parent = upBtn
+
+            local downBtn = Instance.new("TextButton")
+            downBtn.Name = "DownBtn"
+            downBtn.Size = UDim2.fromOffset(50,50)
+            downBtn.Position = UDim2.fromOffset(75, 55)
+            downBtn.BackgroundColor3 = Color3.fromHex("#1d4ed8")
+            downBtn.Text = "▼"
+            downBtn.TextColor3 = Color3.fromHex("#f0f9ff")
+            downBtn.TextScaled = true
+            downBtn.Font = Enum.Font.GothamBlack
+            downBtn.AutoButtonColor = false
+            downBtn.Parent = frame
+
+            local downCorner = Instance.new("UICorner")
+            downCorner.CornerRadius = UDim.new(0,10)
+            downCorner.Parent = downBtn
+
+            local downStroke = Instance.new("UIStroke")
+            downStroke.Color = Color3.fromHex("#38bdf8")
+            downStroke.Thickness = 1
+            downStroke.Parent = downBtn
+
+            local downGrad = Instance.new("UIGradient")
+            downGrad.Color = ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Color3.fromHex("#3d87ff")),
+                ColorSequenceKeypoint.new(1, Color3.fromHex("#1d4ed8"))
+            }
+            downGrad.Rotation = 90
+            downGrad.Parent = downBtn
+
+            local resetBtn = Instance.new("TextButton")
+            resetBtn.Name = "ResetBtn"
+            resetBtn.Size = UDim2.new(1, -30, 0, 28)
+            resetBtn.Position = UDim2.fromOffset(15, 115)
+            resetBtn.BackgroundColor3 = Color3.fromHex("#0f172a")
+            resetBtn.Text = "Reset to Feet"
+            resetBtn.TextColor3 = Color3.fromHex("#f0f9ff")
+            resetBtn.TextSize = 13
+            resetBtn.Font = Enum.Font.GothamSemibold
+            resetBtn.AutoButtonColor = true
+            resetBtn.Parent = frame
+
+            local resetCorner = Instance.new("UICorner")
+            resetCorner.CornerRadius = UDim.new(0,8)
+            resetCorner.Parent = resetBtn
+
+            local resetStroke = Instance.new("UIStroke")
+            resetStroke.Color = Color3.fromHex("#1e293b")
+            resetStroke.Parent = resetBtn
+
+            local dragging = false
+            local dragStart, startPos
+            frame.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    dragging = true
+                    dragStart = input.Position
+                    startPos = frame.Position
+                    input.Changed:Connect(function()
+                        if input.UserInputState == Enum.UserInputState.End then
+                            dragging = false
+                        end
+                    end)
+                end
+            end)
+            frame.InputChanged:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                    if dragging then
+                        local delta = input.Position - dragStart
+                        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+                        shadow.Position = frame.Position + UDim2.fromOffset(4,4)
+                    end
+                end
+            end)
+
+            upBtn.MouseButton1Down:Connect(function() holdUp = true end)
+            upBtn.MouseButton1Up:Connect(function() holdUp = false end)
+            upBtn.MouseLeave:Connect(function() holdUp = false end)
+
+            downBtn.MouseButton1Down:Connect(function() holdDown = true end)
+            downBtn.MouseButton1Up:Connect(function() holdDown = false end)
+            downBtn.MouseLeave:Connect(function() holdDown = false end)
+
+            resetBtn.MouseButton1Click:Connect(function()
+                local r = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                if r then targetY = r.Position.Y - 3.5 end
+            end)
+        else
+            holdUp = false
+            holdDown = false
+            if customGui then customGui:Destroy() customGui = nil end
+            if followerPart then followerPart:Destroy() followerPart = nil end
+        end
+    end
+})
+
+-- Loop logic Tab Player
+RunService.Stepped:Connect(function(_, dt)
+    local char = player.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if not root or not humanoid then return end
+
+    local voidHeight = workspace.FallenPartsDestroyHeight + autoVoidOffset
+
+    if root.Position.Y > voidHeight + 10 then
+        if humanoid.FloorMaterial ~= Enum.Material.Air then
+            lastSafeCFrame = root.CFrame
+        end
+    end
+
+    if antiVoidEnabled and root.Position.Y < voidHeight then
+        if lastSafeCFrame then
+            root.CFrame = lastSafeCFrame + Vector3.new(0,3,0)
+        else
+            root.CFrame = CFrame.new(root.Position.X, voidHeight + 100, root.Position.Z)
+        end
+        root.AssemblyLinearVelocity = Vector3.zero
+    end
+
+    if antiKnockbackEnabled then
+        if root.AssemblyLinearVelocity.Magnitude > 100 then
+            root.AssemblyLinearVelocity = Vector3.new(
+                root.AssemblyLinearVelocity.X * 0.2,
+                root.AssemblyLinearVelocity.Y,
+                root.AssemblyLinearVelocity.Z * 0.2
+            )
+        end
+    end
+
+    if showGuiActive and followerPart then
+        if holdUp then targetY += moveSpeed * dt end
+        if holdDown then targetY -= moveSpeed * dt end
+
+        local targetPos = Vector3.new(root.Position.X, targetY, root.Position.Z)
+        local currentPos = followerPart.Position
+        local newPos = currentPos:Lerp(targetPos, 0.2)
+        followerPart.CFrame = CFrame.new(newPos)
+
+        if customGui and customGui.Parent then
+            local main = customGui:FindFirstChild("Main")
+            if main then
+                local yLabel = main:FindFirstChild("YLabel")
+                if yLabel then
+                    yLabel.Text = string.format("Y: %.1f", targetY)
+                end
+            end
+        end
+    end
+end)

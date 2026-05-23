@@ -246,7 +246,7 @@ TabExploits:Button({ Title = "Refresh Player List", Color = Color3.fromHex("#3d8
     DropdownView:Refresh(getPlayerList())
 end })
 
-TabExploits:Toggle({ Title = "View Player", Icon = "eye", Callback = function(state)
+TabExploits:Toggle({ Title = "View Player", Callback = function(state)
     viewEnabled = state
     if viewEnabled then
         local target = Players:FindFirstChild(selectedTargetName)
@@ -333,7 +333,7 @@ TabPartTP:Button({ Title = "Create locations", Color = Color3.fromHex("#00d4ff")
     DropdownPart:Refresh(savedParts)
 end})
 
-TabPartTP:Button({ Title = "Delete Selected Part", Color = Color3.fromHex("#ff3030"), Callback = function()
+TabPartTP:Button({ Title = "Delete locations", Color = Color3.fromHex("#ff3030"), Callback = function()
     local target = workspace:FindFirstChild(selectedPartName)
     if target then
         target:Destroy()

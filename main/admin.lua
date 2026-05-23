@@ -476,11 +476,9 @@ local Tab4 = Window:Tab({
 })
 
 local Button = Tab4:Button({
-    Title = "Advanced Button",
-    Color = Color3.fromHex("#a2ff30"), -- paint the button
-    Justify = "Center", -- align items in the center (Center or Between or Left or Right)
-    IconAlign = "Left", -- Left or Right of the text
-    Icon = "", -- removing icon
+    Title = "refresh admin panel",
+    Color = Color3.fromHex("#ff3030"),
+    Justify = "Center",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/admin.lua" ,true))()
         Window:Destroy()

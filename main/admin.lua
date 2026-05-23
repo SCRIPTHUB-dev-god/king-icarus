@@ -21,13 +21,13 @@ WindUI:AddTheme({
 })
 
 local Window = WindUI:CreateWindow({
-    Title = "Icarus Hub | Main Menu",
-    Icon = "door-open",
-    Author = "by.ftgs",
+    Title = "Icarus admin | script panel",
+    Icon = "star",
+    Author = "by.icarus community",
     Theme = "My Theme",
-    Size = UDim2.fromOffset(680, 460),
+    Size = UDim2.fromOffset(740, 500),
     Transparent = true,
-    BackgroundImageTransparency = 0.42,
+    BackgroundImageTransparency = 0.73,
     HideSearchBar = false,
 })
 
@@ -36,7 +36,7 @@ Window:Tag({ Title = "keyless", Icon = "key", Color = Color3.fromHex("#174aa3"),
 Window:Tag({ Title = "V 1.1.6", Icon = "server", Color = Color3.fromHex("#fff200"), Radius = 1 })
 
 Window:EditOpenButton({
-    Title = "Icarus Hub",
+    Title = "Icarus admin",
     Icon = "snowflake",
     CornerRadius = UDim.new(0,16),
     StrokeThickness = 2.25,
@@ -50,11 +50,11 @@ Window:Divider()
 
 local Section1 = Window:Section({
     Title = "Main Features",
-    Icon = "bird",
+    Icon = "star",
     Opened = true,
 })
 
-local TabExploits = Section1:Tab({ Title = "Exploits", Icon = "bird" })
+local TabExploits = Section1:Tab({ Title = "Exploits", Icon = "clipboard" })
 local TabPartTP = Section1:Tab({ Title = "Part TP", Icon = "map-pin" })
 
 local flyEnabled = false
@@ -187,7 +187,7 @@ local function setFreecam(state)
     end
 end
 
-TabExploits:Toggle({ Title = "Fly Camera", Icon = "bird", Callback = function(state)
+TabExploits:Toggle({ Title = "Fly Camera", Callback = function(state)
     flyEnabled = state
     local char = player.Character
     local humanoid = char and char:FindFirstChildOfClass("Humanoid")
@@ -215,17 +215,17 @@ end})
 TabExploits:Input({ Title = "Fly Speed", Value = "70", Callback = function(input) if tonumber(input) then speed = tonumber(input) end end })
 TabExploits:Divider()
 
-TabExploits:Toggle({ Title = "Shift Lock", Icon = "lock", Callback = function(state)
+TabExploits:Toggle({ Title = "Shift Lock", Callback = function(state)
     setShiftLock(state)
 end})
 TabExploits:Divider()
 
 local noclipEnabled = false
-TabExploits:Toggle({ Title = "Noclip", Icon = "shield-alert", Callback = function(state) noclipEnabled = state end })
+TabExploits:Toggle({ Title = "Noclip", Callback = function(state) noclipEnabled = state end })
 TabExploits:Divider()
 
 local infJumpEnabled = false
-TabExploits:Toggle({ Title = "Infinite Jump", Icon = "arrow-up", Callback = function(state) infJumpEnabled = state end })
+TabExploits:Toggle({ Title = "Infinite Jump", Callback = function(state) infJumpEnabled = state end })
 TabExploits:Divider()
 
 local viewEnabled = false
@@ -267,7 +267,7 @@ end })
 
 TabExploits:Divider()
 
-TabExploits:Toggle({ Title = "Freecam", Icon = "camera", Callback = function(state)
+TabExploits:Toggle({ Title = "Freecam", Callback = function(state)
     setFreecam(state)
 end})
 
@@ -384,8 +384,8 @@ local function startLoopTween()
     end
 end
 
-TabPartTP:Input({ Title = "Tween Speed (0=Instan, 1=Normal, 10=Lambat)", Value = "1", Callback = function(val) loopTweenSpeed = tonumber(val) or 1 end })
-TabPartTP:Toggle({ Title = "Loop Tween", Callback = function(state)
+TabPartTP:Input({ Title = "Tween Speed", Value = "1", Callback = function(val) loopTweenSpeed = tonumber(val) or 1 end })
+TabPartTP:Toggle({ Title = "start", Callback = function(state)
     loopTweenEnabled = state
     if state then
         currentLoopIndex = 1
@@ -395,7 +395,7 @@ TabPartTP:Toggle({ Title = "Loop Tween", Callback = function(state)
     end
 end })
 
-TabPartTP:Button({ Title = "Spawn Loop Part (Visible)", Color = Color3.fromHex("#00d4ff"), Callback = function()
+TabPartTP:Button({ Title = "Set location", Color = Color3.fromHex("#00d4ff"), Callback = function()
     local char = player.Character
     local root = char and char:FindFirstChild("HumanoidRootPart")
     if root then
@@ -413,7 +413,7 @@ TabPartTP:Button({ Title = "Spawn Loop Part (Visible)", Color = Color3.fromHex("
     end
 end })
 
-TabPartTP:Button({ Title = "Reset Loop Parts", Color = Color3.fromHex("#ff3030"), Callback = function()
+TabPartTP:Button({ Title = "Reset all locations", Color = Color3.fromHex("#ff3030"), Callback = function()
     loopTweenEnabled = false
     if currentTween then currentTween:Cancel() currentTween = nil end
     for _, p in pairs(loopParts) do if p then p:Destroy() end end

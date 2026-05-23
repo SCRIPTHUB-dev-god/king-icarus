@@ -3,6 +3,9 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local ContextActionService = game:GetService("ContextActionService")
+local Lighting = game:GetService("Lighting")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -58,10 +61,8 @@ local Section1 = Window:Section({
 local TabExploits = Section1:Tab({ Title = "Exploits", Icon = "clipboard" })
 local TabPartTP = Section1:Tab({ Title = "Part TP", Icon = "map-pin" })
 local TabPlayer = Section1:Tab({ Title = "Player", Icon = "user" })
+local ServerTab = Section1:Tab({ Title = "Server", Icon = "server" })
 
--- =============================================================================
--- [STATE & VARIABLES]
--- =============================================================================
 local flyEnabled = false
 local speed = 70
 local bVelocity = nil
@@ -89,7 +90,6 @@ local loopTweenEnabled = false
 local currentLoopIndex = 1
 local currentTween = nil
 
--- Player States
 local antiVoidEnabled = false
 local lastSafeCFrame = nil
 local autoVoidOffset = 50
@@ -104,9 +104,125 @@ local holdUp = false
 local holdDown = false
 local moveSpeed = 25
 
--- =============================================================================
--- [FUNCTIONS LOGIC]
--- =============================================================================
+local safePart = nil
+local originalChar = nil
+local cloneChar = nil
+local tpConn = nil
+local originalName = nil
+
+local maxZoomValue = 128
+local minZoomValue = 0.5
+local maxZoomEnabled = false
+local minZoomEnabled = false
+local infiniteZoomEnabled = false
+
+local States = {
+    Fullbright = false,
+    Tracers = false,
+    Box2D = false,
+    Box3D = false,
+    NameESP = false,
+    DistanceESP = false,
+    HealthBar = false,
+    HealthNumber = false,
+    Invisible = false,
+    LoopTP = false
+}
+
+local defaultLighting = {
+    Brightness = Lighting.Brightness,
+    ClockTime = Lighting.ClockTime,
+    FogEnd = Lighting.FogEnd,
+    GlobalShadows = Lighting.GlobalShadows,
+    OutdoorAmbient = Lighting.OutdoorAmbient,
+    ExposureCompensation = Lighting.ExposureCompensation
+}
+local lastFullbright = false
+
+local ESP_Objects = {}
+
+local function updateCamera()
+    if player.Character then
+        if infiniteZoomEnabled then
+            player.CameraMaxZoomDistance = 999999
+        elseif maxZoomEnabled then
+            player.CameraMaxZoomDistance = maxZoomValue
+        else
+            player.CameraMaxZoomDistance = 128
+        end
+
+        if minZoomEnabled then
+            player.CameraMinZoomDistance = minZoomValue
+        else
+            player.CameraMinZoomDistance = 0.5
+        end
+    end
+end
+
+player.CharacterAdded:Connect(function()
+    task.wait(1)
+    updateCamera()
+end)
+
+local function ClearESP(plr)
+    if ESP_Objects[plr] then
+        for _,v in pairs(ESP_Objects[plr]) do
+            if typeof(v) == "table" then
+                for _,d in pairs(v) do pcall(function() d:Remove() end) end
+            else
+                pcall(function() v:Remove() end)
+                pcall(function() v:Destroy() end)
+            end
+        end
+        ESP_Objects[plr] = nil
+    end
+end
+
+local function CreateESP(plr)
+    if plr == player then return end
+    if ESP_Objects[plr] then return end
+    ESP_Objects[plr] = {}
+
+    local bill = Instance.new("BillboardGui")
+    bill.Name = "WindESP"
+    bill.AlwaysOnTop = true
+    bill.Size = UDim2.new(0,200,0,50)
+    bill.StudsOffset = Vector3.new(0,3,0)
+    bill.Parent = game.CoreGui
+
+    local nameLbl = Instance.new("TextLabel", bill)
+    nameLbl.Size = UDim2.new(1,0,0,20)
+    nameLbl.BackgroundTransparency = 1
+    nameLbl.TextColor3 = Color3.new(1,1,1)
+    nameLbl.TextStrokeTransparency = 0
+    nameLbl.Font = Enum.Font.Code
+    nameLbl.TextSize = 14
+
+    local distLbl = Instance.new("TextLabel", bill)
+    distLbl.Position = UDim2.new(0,0,0,20)
+    distLbl.Size = UDim2.new(1,0,0,15)
+    distLbl.BackgroundTransparency = 1
+    distLbl.TextColor3 = Color3.new(1,1,1)
+    distLbl.TextStrokeTransparency = 0
+    distLbl.Font = Enum.Font.Code
+    distLbl.TextSize = 13
+
+    ESP_Objects[plr].Billboard = bill
+    ESP_Objects[plr].NameLbl = nameLbl
+    ESP_Objects[plr].DistLbl = distLbl
+
+    local box = Instance.new("BoxHandleAdornment")
+    box.Name = "WindBox3D"
+    box.AlwaysOnTop = true
+    box.ZIndex = 10
+    box.Size = Vector3.new(4,6,2)
+    box.Color3 = Color3.fromRGB(0,255,0)
+    box.Transparency = 0.5
+    box.Parent = game.CoreGui
+    ESP_Objects[plr].Box3D = box
+    ESP_Objects[plr].Drawings = {}
+end
+
 local function setShiftLock(state)
     local char = player.Character or player.CharacterAdded:Wait()
     local humanoid = char:WaitForChild("Humanoid")
@@ -259,9 +375,77 @@ local function startLoopTween()
     end
 end
 
--- =============================================================================
--- [TAB EXPLOITS]
--- =============================================================================
+local function setCloneAppearance(char)
+    if not char then return end
+    for _,obj in pairs(char:GetDescendants()) do
+        if obj:IsA("BasePart") then
+            obj.Transparency = 0.75
+            obj.LocalTransparencyModifier = 0.75
+        elseif obj:IsA("Decal") or obj:IsA("Texture") then
+            obj.Transparency = 0.75
+        end
+    end
+end
+
+local function hideNameTag(char)
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+        hum.NameDisplayDistance = 0
+        hum.HealthDisplayDistance = 0
+    end
+end
+
+local function restoreNameTag(char)
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
+        hum.NameDisplayDistance = 100
+        hum.HealthDisplayDistance = 100
+    end
+end
+
+local function fixAnimations(char)
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hideNameTag(char)
+        local animate = char:FindFirstChild("Animate")
+        if animate and animate:IsA("LocalScript") then
+            animate.Disabled = true
+            task.defer(function() animate.Disabled = false end)
+        end
+        task.defer(function()
+            hum:ChangeState(Enum.HumanoidStateType.Running)
+            task.wait(0.1)
+            hum.Jump = true
+        end)
+    end
+    setCloneAppearance(char)
+end
+
+task.spawn(function()
+    while task.wait(0.5) do
+        if States.Fullbright then
+            Lighting.Brightness = 2
+            Lighting.ClockTime = 14
+            Lighting.FogEnd = 100000
+            Lighting.GlobalShadows = false
+            Lighting.OutdoorAmbient = Color3.fromRGB(128,128,128)
+            Lighting.ExposureCompensation = 0.5
+            lastFullbright = true
+        elseif lastFullbright then
+            Lighting.Brightness = defaultLighting.Brightness
+            Lighting.ClockTime = defaultLighting.ClockTime
+            Lighting.FogEnd = defaultLighting.FogEnd
+            Lighting.GlobalShadows = defaultLighting.GlobalShadows
+            Lighting.OutdoorAmbient = defaultLighting.OutdoorAmbient
+            Lighting.ExposureCompensation = defaultLighting.ExposureCompensation
+            lastFullbright = false
+        end
+    end
+end)
+
 TabExploits:Toggle({ Title = "Fly", Callback = function(state)
     flyEnabled = state
     local char = player.Character
@@ -322,8 +506,204 @@ TabExploits:Toggle({ Title = "View Player", Callback = function(state)
 end })
 TabExploits:Divider()
 
+local selectedPlayerName = nil
+local selectedMode = "TP"
+local loopTask = nil
+local playerTpTween = nil
+local loopSpeed = 0.2
+
+local function getPlayerNames()
+    local names = {}
+    for _,plr in ipairs(Players:GetPlayers()) do
+        if plr ~= player then
+            table.insert(names, plr.Name)
+        end
+    end
+    return names
+end
+
+local playerDropdown = TabExploits:Dropdown({
+    Title = "Target Player",
+    Values = getPlayerNames(),
+    Value = nil,
+    Callback = function(val)
+        selectedPlayerName = val
+    end
+})
+
+local modeDropdown = TabExploits:Dropdown({
+    Title = "Mode",
+    Values = {"TP","Tween"},
+    Value = "TP",
+    Callback = function(val)
+        selectedMode = val
+    end
+})
+
+TabExploits:Button({
+    Title = "Refresh Player List",
+    Callback = function()
+        local names = getPlayerNames()
+        if playerDropdown then
+            if playerDropdown.Refresh then
+                playerDropdown:Refresh(names)
+            elseif playerDropdown.Set then
+                playerDropdown:Set(names)
+            end
+        end
+    end
+})
+
+local function tpToPlayer()
+    if not selectedPlayerName then return end
+    local target = Players:FindFirstChild(selectedPlayerName)
+    if not target or not target.Character:FindFirstChild("HumanoidRootPart") then return end
+    local myChar = player.Character
+    if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return end
+
+    local targetHRP = target.Character.HumanoidRootPart
+    local myHRP = myChar.HumanoidRootPart
+
+    if selectedMode == "TP" then
+        myHRP.CFrame = targetHRP.CFrame + Vector3.new(0,3,0)
+    else
+        if playerTpTween then playerTpTween:Cancel() end
+        local ti = TweenInfo.new(0.5, Enum.EasingStyle.Linear)
+        playerTpTween = TweenService:Create(myHRP, ti, {CFrame = targetHRP.CFrame + Vector3.new(0,3,0)})
+        playerTpTween:Play()
+    end
+end
+
+TabExploits:Button({
+    Title = "TP / Tween To Player",
+    Callback = function()
+        tpToPlayer()
+    end
+})
+
+TabExploits:Input({
+    Title = "Loop Speed",
+    Value = "0.2",
+    Placeholder = "0.1 - 1",
+    Callback = function(val)
+        local num = tonumber(val)
+        if num and num > 0 then
+            loopSpeed = num
+        end
+    end
+})
+
+TabExploits:Toggle({
+    Title = "Loop TP To Player",
+    Value = false,
+    Callback = function(state)
+        States.LoopTP = state
+        if state then
+            if loopTask then task.cancel(loopTask) end
+            loopTask = task.spawn(function()
+                while States.LoopTP do
+                    tpToPlayer()
+                    task.wait(loopSpeed)
+                end
+            end)
+        else
+            if loopTask then task.cancel(loopTask) loopTask = nil end
+            if playerTpTween then playerTpTween:Cancel() playerTpTween = nil end
+        end
+    end
+})
+TabExploits:Divider()
+
 TabExploits:Toggle({ Title = "Freecam", Callback = function(state) setFreecam(state) end})
 TabExploits:Slider({ Title = "Freecam Speed", Step = 0.5, Value = { Min = 0.5, Max = 10, Default = 2 }, Callback = function(value) freecamSpeed = value end })
+TabExploits:Divider()
+
+TabExploits:Toggle({
+    Title = "Invisible",
+    Value = false,
+    Callback = function(state)
+        States.Invisible = state
+        if state then
+            if originalChar then return end
+            local char = player.Character
+            if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+
+            local spawnCFrame = char:GetPivot()
+            originalChar = char
+            originalName = char.Name
+            originalChar.Name = originalName.. "_SafeBody"
+            hideNameTag(originalChar)
+
+            local SAFE_POS = Vector3.new(10000, 10000)
+            safePart = Instance.new("Part")
+            safePart.Name = "WindSafePlatform"
+            safePart.Size = Vector3.new(30,1,30)
+            safePart.Anchored = true
+            safePart.CanCollide = true
+            safePart.Transparency = 0.5
+            safePart.Color = Color3.fromRGB(0,170,255)
+            safePart.CFrame = CFrame.new(SAFE_POS)
+            safePart.Parent = workspace
+
+            local hrp = originalChar:FindFirstChild("HumanoidRootPart")
+            local hum = originalChar:FindFirstChildOfClass("Humanoid")
+            if hrp then
+                hrp.CFrame = safePart.CFrame + Vector3.new(0,5,0)
+                hrp.Anchored = true
+            end
+            if hum then hum.PlatformStand = true end
+
+            tpConn = RunService.Heartbeat:Connect(function()
+                if not States.Invisible or not originalChar or not safePart then return end
+                local hrp = originalChar:FindFirstChild("HumanoidRootPart")
+                if hrp then hrp.CFrame = safePart.CFrame + Vector3.new(0,5,0) end
+            end)
+
+            originalChar.Archivable = true
+            cloneChar = originalChar:Clone()
+            cloneChar.Name = originalName
+            cloneChar.Parent = workspace.CurrentCamera
+            cloneChar:PivotTo(spawnCFrame)
+
+            local cHrp = cloneChar:FindFirstChild("HumanoidRootPart")
+            if cHrp then cHrp.Anchored = false end
+            local cHum = cloneChar:FindFirstChildOfClass("Humanoid")
+            if cHum then cHum.PlatformStand = false end
+
+            fixAnimations(cloneChar)
+
+            player.Character = cloneChar
+            workspace.CurrentCamera.CameraSubject = cloneChar:FindFirstChildOfClass("Humanoid")
+            workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+        else
+            if tpConn then tpConn:Disconnect() tpConn = nil end
+            if cloneChar then
+                local clonePos = cloneChar:GetPivot()
+                cloneChar:Destroy()
+                cloneChar = nil
+                if originalChar then
+                    local hrp = originalChar:FindFirstChild("HumanoidRootPart")
+                    local hum = originalChar:FindFirstChildOfClass("Humanoid")
+                    if hrp then hrp.Anchored = false end
+                    if hum then hum.PlatformStand = false end
+                    originalChar.Name = originalName or player.Name
+                    originalChar:PivotTo(clonePos)
+                    restoreNameTag(originalChar)
+                    player.Character = originalChar
+                    workspace.CurrentCamera.CameraSubject = originalChar:FindFirstChildOfClass("Humanoid")
+                    originalChar = nil
+                    originalName = nil
+                end
+            end
+            if safePart then safePart:Destroy() safePart = nil end
+        end
+    end
+})
+
+TabExploits:Paragraph({
+    Title = "invisible information",
+    Desc = "this script invisible support r15 not r6"
+})
 TabExploits:Divider()
 
 TabExploits:Input({ Title = "WalkSpeed Power", Value = "16", Callback = function(val) walkSpeedPower = tonumber(val) or 16 end })
@@ -337,9 +717,6 @@ TabExploits:Button({ Title = "Reset Power Defaults", Color = Color3.fromHex("#ff
     jumpEnabled = false
 end })
 
--- =============================================================================
--- [TAB PART TP]
--- =============================================================================
 local DropdownPart = TabPartTP:Dropdown({ Title = "Select locations", Values = {"None"}, Callback = function(v) selectedPartName = v end })
 local DropdownMode = TabPartTP:Dropdown({ Title = "Mode", Values = {"Teleport", "Tween"}, Value = "Teleport", Callback = function(v) tpMode = v end })
 
@@ -411,9 +788,55 @@ TabPartTP:Button({ Title = "Reset all locations", Color = Color3.fromHex("#ff303
     currentLoopIndex = 1
 end })
 
--- =============================================================================
--- [TAB PLAYER]
--- =============================================================================
+ServerTab:Toggle({
+    Title = "Fullbright",
+    Value = false,
+    Callback = function(s)
+        States.Fullbright = s
+        WindUI:Notify({
+            Title = "Fullbright",
+            Content = s and "Fullbright ON" or "Fullbright OFF",
+            Duration = 2
+        })
+    end
+})
+
+ServerTab:Divider()
+
+ServerTab:Toggle({ Title = "Tracers", Value = false, Callback = function(s) States.Tracers = s end })
+ServerTab:Toggle({ Title = "2D Box", Value = false, Callback = function(s) States.Box2D = s end })
+ServerTab:Toggle({ Title = "3D Box", Value = false, Callback = function(s) States.Box3D = s end })
+ServerTab:Toggle({ Title = "Name ESP", Value = false, Callback = function(s) States.NameESP = s end })
+ServerTab:Toggle({ Title = "Distance ESP", Value = false, Callback = function(s) States.DistanceESP = s end })
+ServerTab:Toggle({ Title = "Health Bar ESP", Value = false, Callback = function(s) States.HealthBar = s end })
+ServerTab:Toggle({ Title = "Number Health", Value = false, Callback = function(s) States.HealthNumber = s end })
+
+ServerTab:Divider()
+
+ServerTab:Button({
+    Title = "Rejoin Server",
+    Callback = function()
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
+    end
+})
+
+ServerTab:Button({
+    Title = "Server Hop",
+    Callback = function()
+        local success, servers = pcall(function()
+            return HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Desc&limit=100"))
+        end)
+        if success and servers and servers.data then
+            for _, server in ipairs(servers.data) do
+                if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                    TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, player)
+                    break
+                end
+            end
+        end
+    end
+})
+
 TabPlayer:Toggle({ Title = "Anti Void", Callback = function(state) antiVoidEnabled = state end })
 
 TabPlayer:Toggle({
@@ -442,10 +865,8 @@ TabPlayer:Toggle({
     end
 })
 
--- DIVIDER DI BAWAH ANTI VOID & ANTI KNOCKBACK
 TabPlayer:Divider()
 
--- SHOW GUI TOGGLE FOR CONTROLLING POROS Y PLATFORM
 TabPlayer:Toggle({
     Title = "air walk",
     Callback = function(state)
@@ -461,7 +882,7 @@ TabPlayer:Toggle({
             followerPart.Name = "FollowerPart"
             followerPart.Size = Vector3.new(12,1,12)
             followerPart.Anchored = true
-            followerPart.CanCollide = true -- TABRAKAN AKTIF
+            followerPart.CanCollide = true
             followerPart.Material = Enum.Material.Neon
             followerPart.Color = Color3.fromRGB(0,212,255)
             followerPart.Transparency = 1
@@ -662,14 +1083,165 @@ TabPlayer:Toggle({
     end
 })
 
--- =============================================================================
--- [UNIFIED HEARTBEAT / STEPPED LOOP]
--- =============================================================================
+TabPlayer:Divider()
+
+TabPlayer:Input({
+    Title = "Max Zoom Distance",
+    Value = "128",
+    Callback = function(text)
+        local num = tonumber(text)
+        if num then
+            maxZoomValue = num
+            updateCamera()
+        end
+    end
+})
+
+TabPlayer:Input({
+    Title = "Min Zoom Distance",
+    Value = "0.5",
+    Callback = function(text)
+        local num = tonumber(text)
+        if num then
+            minZoomValue = num
+            updateCamera()
+        end
+    end
+})
+
+TabPlayer:Toggle({
+    Title = "Toggle Max Zoom",
+    Value = false,
+    Callback = function(val)
+        maxZoomEnabled = val
+        updateCamera()
+    end
+})
+
+TabPlayer:Toggle({
+    Title = "Toggle Min Zoom",
+    Value = false,
+    Callback = function(val)
+        minZoomEnabled = val
+        updateCamera()
+    end
+})
+
+TabPlayer:Toggle({
+    Title = "Infinite Max Zoom",
+    Value = false,
+    Callback = function(val)
+        infiniteZoomEnabled = val
+        updateCamera()
+    end
+})
+
 UserInputService.JumpRequest:Connect(function()
     if infJumpEnabled then
         local char = player.Character
         local humanoid = char and char:FindFirstChildOfClass("Humanoid")
         if humanoid then humanoid:ChangeState(Enum.HumanoidStateType.Jumping) end
+    end
+end)
+
+Players.PlayerAdded:Connect(function(plr)
+    plr.CharacterAdded:Connect(function() task.wait(1) CreateESP(plr) end)
+end)
+
+Players.PlayerRemoving:Connect(ClearESP)
+
+for _,plr in pairs(Players:GetPlayers()) do
+    if plr ~= player then CreateESP(plr) end
+end
+
+RunService.RenderStepped:Connect(function()
+    local cam = workspace.CurrentCamera
+    for plr,obj in pairs(ESP_Objects) do
+        local char = plr.Character
+        if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Humanoid") and char:FindFirstChild("Head") then
+            local hrp = char.HumanoidRootPart
+            local hum = char.Humanoid
+            local head = char.Head
+
+            if obj.Billboard then
+                obj.Billboard.Adornee = hrp
+                obj.Billboard.Enabled = States.NameESP or States.DistanceESP or States.HealthNumber
+                obj.NameLbl.Visible = States.NameESP
+                obj.NameLbl.Text = plr.Name
+
+                local dist = player.Character and player.Character:FindFirstChild("HumanoidRootPart") and (hrp.Position - player.Character.HumanoidRootPart.Position).Magnitude or 0
+                obj.DistLbl.Visible = States.DistanceESP or States.HealthNumber
+
+                local txt = ""
+                if States.DistanceESP then txt = txt.. string.format("[%dm] ", math.floor(dist)) end
+                if States.HealthNumber then txt = txt.. string.format("%d HP", math.floor(hum.Health)) end
+                obj.DistLbl.Text = txt
+            end
+
+            if obj.Box3D then
+                obj.Box3D.Adornee = hrp
+                obj.Box3D.Visible = States.Box3D
+            end
+
+            local rootPos, rootVis = cam:WorldToViewportPoint(hrp.Position)
+            local headPos = cam:WorldToViewportPoint(head.Position + Vector3.new(0,0.5,0))
+            local legPos = cam:WorldToViewportPoint(hrp.Position - Vector3.new(0,3,0))
+            local onScreen = rootVis and headPos.Z > 0 and legPos.Z > 0
+
+            if onScreen and (States.Box2D or States.Tracers or States.HealthBar) then
+                local height = math.abs(headPos.Y - legPos.Y)
+                local width = height * 0.65
+
+                if States.Tracers then
+                    if not obj.Drawings.Tracer then obj.Drawings.Tracer = Drawing.new("Line") end
+                    obj.Drawings.Tracer.Visible = true
+                    obj.Drawings.Tracer.From = Vector2.new(cam.ViewportSize.X/2, cam.ViewportSize.Y)
+                    obj.Drawings.Tracer.To = Vector2.new(rootPos.X, rootPos.Y)
+                    obj.Drawings.Tracer.Color = Color3.new(1,0,0)
+                    obj.Drawings.Tracer.Thickness = 1.5
+                else
+                    if obj.Drawings.Tracer then obj.Drawings.Tracer.Visible = false end
+                end
+
+                if States.Box2D then
+                    if not obj.Drawings.Box then obj.Drawings.Box = Drawing.new("Square") end
+                    obj.Drawings.Box.Visible = true
+                    obj.Drawings.Box.Size = Vector2.new(width, height)
+                    obj.Drawings.Box.Position = Vector2.new(rootPos.X - width/2, headPos.Y)
+                    obj.Drawings.Box.Color = Color3.new(0,1,0)
+                    obj.Drawings.Box.Thickness = 1.5
+                    obj.Drawings.Box.Filled = false
+                else
+                    if obj.Drawings.Box then obj.Drawings.Box.Visible = false end
+                end
+
+                if States.HealthBar then
+                    if not obj.Drawings.HealthBG then obj.Drawings.HealthBG = Drawing.new("Square") end
+                    if not obj.Drawings.Health then obj.Drawings.Health = Drawing.new("Square") end
+                    obj.Drawings.HealthBG.Visible = true
+                    obj.Drawings.Health.Visible = true
+                    local barW = 4
+                    local barH = height * math.clamp(hum.Health / hum.MaxHealth,0,1)
+                    obj.Drawings.HealthBG.Size = Vector2.new(barW, height)
+                    obj.Drawings.HealthBG.Position = Vector2.new(rootPos.X - width/2 - 8, headPos.Y)
+                    obj.Drawings.HealthBG.Color = Color3.new(0,0,0)
+                    obj.Drawings.HealthBG.Filled = true
+                    obj.Drawings.Health.Size = Vector2.new(barW, barH)
+                    obj.Drawings.Health.Position = Vector2.new(rootPos.X - width/2 - 8, headPos.Y + height - barH)
+                    obj.Drawings.Health.Color = Color3.fromRGB(0,255,0)
+                    obj.Drawings.Health.Filled = true
+                else
+                    if obj.Drawings.Health then obj.Drawings.Health.Visible = false end
+                    if obj.Drawings.HealthBG then obj.Drawings.HealthBG.Visible = false end
+                end
+            else
+                if obj.Drawings then for _,d in pairs(obj.Drawings) do d.Visible = false end end
+            end
+        else
+            if obj.Billboard then obj.Billboard.Enabled = false end
+            if obj.Box3D then obj.Box3D.Visible = false end
+            if obj.Drawings then for _,d in pairs(obj.Drawings) do d.Visible = false end end
+        end
     end
 end)
 
@@ -680,12 +1252,10 @@ RunService.Stepped:Connect(function(_, dt)
     local humanoid = char:FindFirstChildOfClass("Humanoid")
     if not root or not humanoid then return end
 
-    -- Noclip Logic
     if noclipEnabled then
         for _, part in pairs(char:GetDescendants()) do if part:IsA("BasePart") then part.CanCollide = false end end
     end
 
-    -- View Player Logic
     if viewEnabled and followPart then
         local target = Players:FindFirstChild(selectedTargetName)
         if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
@@ -693,11 +1263,11 @@ RunService.Stepped:Connect(function(_, dt)
         end
     end
 
-    -- Walkspeed / Jamppower Multiplier
-    humanoid.WalkSpeed = speedEnabled and walkSpeedPower or 16
-    humanoid.JumpPower = jumpEnabled and jumpPower or 50
+    if not flyEnabled and not freecamPart then
+        humanoid.WalkSpeed = speedEnabled and walkSpeedPower or 16
+        humanoid.JumpPower = jumpEnabled and jumpPower or 50
+    end
 
-    -- Fly Logic
     if flyEnabled and bVelocity and bGyro then
         humanoid.PlatformStand = true
         local moveDir = Vector3.new(0,0,0)
@@ -711,7 +1281,6 @@ RunService.Stepped:Connect(function(_, dt)
         bGyro.CFrame = CFrame.lookAt(root.Position, root.Position + camera.CFrame.LookVector)
     end
 
-    -- Anti Void Logic
     local voidHeight = (workspace.FallenPartsDestroyHeight or -500) + autoVoidOffset
     if root.Position.Y > voidHeight + 10 then
         if humanoid.FloorMaterial ~= Enum.Material.Air then lastSafeCFrame = root.CFrame end
@@ -722,17 +1291,14 @@ RunService.Stepped:Connect(function(_, dt)
         root.AssemblyLinearVelocity = Vector3.zero
     end
 
-    -- Anti Knockback Logic
     if antiKnockbackEnabled and root.AssemblyLinearVelocity.Magnitude > 100 then
         root.AssemblyLinearVelocity = Vector3.new(root.AssemblyLinearVelocity.X * 0.2, root.AssemblyLinearVelocity.Y, root.AssemblyLinearVelocity.Z * 0.2)
     end
 
-    -- Follower Part (Lock X and Z, Manual lock Y Axis)
     if showGuiActive and followerPart then
         if holdUp then targetY += moveSpeed * dt end
         if holdDown then targetY -= moveSpeed * dt end
 
-        -- X & Z mengambil data Player, sedangkan Y statis berdasarkan tombol GUI
         local targetPos = Vector3.new(root.Position.X, targetY, root.Position.Z)
         followerPart.CFrame = CFrame.new(targetPos)
 
@@ -744,9 +1310,6 @@ RunService.Stepped:Connect(function(_, dt)
     end
 end)
 
--- =============================================================================
--- [SETTINGS TAB & REFRES PANEL]
--- =============================================================================
 Window:Divider()
 local Tab4 = Window:Tab({ Title = "setting", Icon = "settings", Locked = false })
 Tab4:Button({

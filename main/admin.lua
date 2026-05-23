@@ -5,6 +5,7 @@ local TweenService = game:GetService("TweenService")
 local ContextActionService = game:GetService("ContextActionService")
 
 local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 local camera = workspace.CurrentCamera
 
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()

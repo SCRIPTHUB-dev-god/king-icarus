@@ -459,12 +459,12 @@ TabPlayer:Toggle({
             if followerPart then followerPart:Destroy() end
             followerPart = Instance.new("Part")
             followerPart.Name = "FollowerPart"
-            followerPart.Size = Vector3.new(6,1,6)
+            followerPart.Size = Vector3.new(12,1,12)
             followerPart.Anchored = true
             followerPart.CanCollide = true -- TABRAKAN AKTIF
             followerPart.Material = Enum.Material.Neon
             followerPart.Color = Color3.fromRGB(0,212,255)
-            followerPart.Transparency = 0.2
+            followerPart.Transparency = 1
             followerPart.TopSurface = Enum.SurfaceType.Smooth
             followerPart.BottomSurface = Enum.SurfaceType.Smooth
             if root then

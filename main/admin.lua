@@ -801,22 +801,26 @@ RunService.Stepped:Connect(function(_, dt)
     end
 
     if showGuiActive and followerPart then
-        if holdUp then targetY += moveSpeed * dt end
-        if holdDown then targetY -= moveSpeed * dt end
+    if holdUp then targetY += moveSpeed * dt end
+    if holdDown then targetY -= moveSpeed * dt end
 
-        local targetPos = Vector3.new(root.Position.X, targetY, root.Position.Z)
-        local currentPos = followerPart.Position
-        local newPos = currentPos:Lerp(targetPos, 0.2)
-        followerPart.CFrame = CFrame.new(newPos)
+    local targetPos = Vector3.new(root.Position.X, targetY, root.Position.Z)
+    followerPart.CFrame = CFrame.new(targetPos)
 
-        if customGui and customGui.Parent then
-            local main = customGui:FindFirstChild("Main")
-            if main then
-                local yLabel = main:FindFirstChild("YLabel")
-                if yLabel then
-                    yLabel.Text = string.format("Y: %.1f", targetY)
-                end
+    if showGuiActive and followerPart then
+    if holdUp then targetY += moveSpeed * dt end
+    if holdDown then targetY -= moveSpeed * dt end
+
+    local targetPos = Vector3.new(root.Position.X, targetY, root.Position.Z)
+    followerPart.CFrame = CFrame.new(targetPos)
+
+    if customGui and customGui.Parent then
+        local main = customGui:FindFirstChild("Main")
+        if main then
+            local yLabel = main:FindFirstChild("YLabel")
+            if yLabel then
+                yLabel.Text = string.format("Y: %.1f", targetY)
             end
         end
     end
-end)
+end

@@ -57,13 +57,56 @@ local Section1 = Window:Section({
 
 local TabExploits = Section1:Tab({ Title = "Exploits", Icon = "clipboard" })
 local TabPartTP = Section1:Tab({ Title = "Part TP", Icon = "map-pin" })
+local TabPlayer = Section1:Tab({ Title = "Player", Icon = "user" })
 
+-- =============================================================================
+-- [STATE & VARIABLES]
+-- =============================================================================
 local flyEnabled = false
 local speed = 70
 local bVelocity = nil
 local bGyro = nil
 local shiftLockConn = nil
 
+local noclipEnabled = false
+local infJumpEnabled = false
+local viewEnabled = false
+local selectedTargetName = ""
+local followPart = nil
+
+local walkSpeedPower = 16
+local jumpPower = 50
+local speedEnabled = false
+local jumpEnabled = false
+
+local savedParts = {}
+local selectedPartName = "None"
+local tpMode = "Teleport"
+
+local loopParts = {}
+local loopTweenSpeed = 1
+local loopTweenEnabled = false
+local currentLoopIndex = 1
+local currentTween = nil
+
+-- Player States
+local antiVoidEnabled = false
+local lastSafeCFrame = nil
+local autoVoidOffset = 50
+local antiKnockbackEnabled = false
+local knockbackConn = nil
+
+local customGui = nil
+local followerPart = nil
+local targetY = 0
+local showGuiActive = false
+local holdUp = false
+local holdDown = false
+local moveSpeed = 25
+
+-- =============================================================================
+-- [FUNCTIONS LOGIC]
+-- =============================================================================
 local function setShiftLock(state)
     local char = player.Character or player.CharacterAdded:Wait()
     local humanoid = char:WaitForChild("Humanoid")
@@ -96,8 +139,7 @@ local moveKeys = {W=false,A=false,S=false,D=false}
 local function updateFreecamMovement()
     if not freecamPart then return end
     local char = player.Character
-    if not char then return end
-    local humanoid = char:FindFirstChild("Humanoid")
+    local humanoid = char and char:FindFirstChild("Humanoid")
     if not humanoid then return end
 
     local camCF = camera.CFrame
@@ -120,10 +162,7 @@ local function updateFreecamMovement()
         if moveKeys.A then moveDir -= camCF.RightVector end
     end
 
-    if moveDir.Magnitude > 0 then
-        moveDir = moveDir.Unit * freecamSpeed
-    end
-
+    if moveDir.Magnitude > 0 then moveDir = moveDir.Unit * freecamSpeed end
     freecamPart.CFrame = freecamPart.CFrame + moveDir
 end
 
@@ -145,7 +184,6 @@ local function setFreecam(state)
         humanoid.WalkSpeed = 0
         humanoid.JumpPower = 0
         root.Anchored = true
-
         player.CameraMaxZoomDistance = 0
         player.CameraMinZoomDistance = 0
         player.CameraMode = Enum.CameraMode.LockFirstPerson
@@ -162,24 +200,18 @@ local function setFreecam(state)
         camera.CameraType = Enum.CameraType.Custom
         camera.CameraSubject = freecamPart
 
-        ContextActionService:BindAction("FreecamMove", handleFreecamInput, false,
-            Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D
-        )
-
+        ContextActionService:BindAction("FreecamMove", handleFreecamInput, false, Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D)
         if freecamConn then freecamConn:Disconnect() end
         freecamConn = RunService.RenderStepped:Connect(updateFreecamMovement)
     else
         humanoid.WalkSpeed = 16
         humanoid.JumpPower = 50
         root.Anchored = false
-
         player.CameraMaxZoomDistance = 400
         player.CameraMinZoomDistance = 0.5
         player.CameraMode = Enum.CameraMode.Classic
-
         camera.CameraType = Enum.CameraType.Custom
         camera.CameraSubject = humanoid
-
         ContextActionService:UnbindAction("FreecamMove")
 
         if freecamConn then freecamConn:Disconnect() freecamConn = nil end
@@ -188,6 +220,48 @@ local function setFreecam(state)
     end
 end
 
+local function getPlayerList()
+    local list = {}
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player then table.insert(list, p.Name) end
+    end
+    return list
+end
+
+local function startLoopTween()
+    if not loopTweenEnabled or #loopParts == 0 then return end
+    local char = player.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    if currentLoopIndex > #loopParts then currentLoopIndex = 1 end
+    local targetPart = loopParts[currentLoopIndex]
+    if not targetPart or not targetPart.Parent then
+        table.remove(loopParts, currentLoopIndex)
+        startLoopTween()
+        return
+    end
+
+    if loopTweenSpeed <= 0 then
+        root.CFrame = targetPart.CFrame
+        currentLoopIndex = currentLoopIndex + 1
+        task.wait(0.05)
+        startLoopTween()
+    else
+        currentTween = TweenService:Create(root, TweenInfo.new(loopTweenSpeed, Enum.EasingStyle.Linear), {CFrame = targetPart.CFrame})
+        currentTween.Completed:Connect(function(state)
+            if state == Enum.PlaybackState.Completed and loopTweenEnabled then
+                currentLoopIndex = currentLoopIndex + 1
+                startLoopTween()
+            end
+        end)
+        currentTween:Play()
+    end
+end
+
+-- =============================================================================
+-- [TAB EXPLOITS]
+-- =============================================================================
 TabExploits:Toggle({ Title = "Fly", Callback = function(state)
     flyEnabled = state
     local char = player.Character
@@ -216,36 +290,17 @@ end})
 TabExploits:Input({ Title = "Fly Speed", Value = "70", Callback = function(input) if tonumber(input) then speed = tonumber(input) end end })
 TabExploits:Divider()
 
-TabExploits:Toggle({ Title = "Shift Lock", Callback = function(state)
-    setShiftLock(state)
-end})
+TabExploits:Toggle({ Title = "Shift Lock", Callback = function(state) setShiftLock(state) end})
 TabExploits:Divider()
 
-local noclipEnabled = false
 TabExploits:Toggle({ Title = "Noclip", Callback = function(state) noclipEnabled = state end })
 TabExploits:Divider()
 
-local infJumpEnabled = false
 TabExploits:Toggle({ Title = "Infinite Jump", Callback = function(state) infJumpEnabled = state end })
 TabExploits:Divider()
 
-local viewEnabled = false
-local selectedTargetName = ""
-local followPart = nil
-
-local function getPlayerList()
-    local list = {}
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= player then table.insert(list, p.Name) end
-    end
-    return list
-end
-
 local DropdownView = TabExploits:Dropdown({ Title = "Select Player to View", Values = getPlayerList(), Callback = function(v) selectedTargetName = v end })
-
-TabExploits:Button({ Title = "Refresh Player List", Color = Color3.fromHex("#3d87ff"), Callback = function()
-    DropdownView:Refresh(getPlayerList())
-end })
+TabExploits:Button({ Title = "Refresh Player List", Color = Color3.fromHex("#3d87ff"), Callback = function() DropdownView:Refresh(getPlayerList()) end })
 
 TabExploits:Toggle({ Title = "View Player", Callback = function(state)
     viewEnabled = state
@@ -265,49 +320,26 @@ TabExploits:Toggle({ Title = "View Player", Callback = function(state)
         camera.CameraSubject = player.Character and player.Character:FindFirstChild("Humanoid")
     end
 end })
-
 TabExploits:Divider()
 
-TabExploits:Toggle({ Title = "Freecam", Callback = function(state)
-    setFreecam(state)
-end})
-
-TabExploits:Slider({
-    Title = "Freecam Speed",
-    Step = 0.5,
-    Value = { Min = 0.5, Max = 10, Default = 2 },
-    Callback = function(value)
-        freecamSpeed = value
-    end
-})
+TabExploits:Toggle({ Title = "Freecam", Callback = function(state) setFreecam(state) end})
+TabExploits:Slider({ Title = "Freecam Speed", Step = 0.5, Value = { Min = 0.5, Max = 10, Default = 2 }, Callback = function(value) freecamSpeed = value end })
 TabExploits:Divider()
-
-local walkSpeedPower = 16
-local jumpPower = 50
-local speedEnabled = false
-local jumpEnabled = false
 
 TabExploits:Input({ Title = "WalkSpeed Power", Value = "16", Callback = function(val) walkSpeedPower = tonumber(val) or 16 end })
 TabExploits:Toggle({ Title = "Speed Enabled", Callback = function(state) speedEnabled = state end})
-
 TabExploits:Input({ Title = "JumpPower Power", Value = "50", Callback = function(val) jumpPower = tonumber(val) or 50 end })
 TabExploits:Toggle({ Title = "Jump Enabled", Callback = function(state) jumpEnabled = state end})
+TabExploits:Button({ Title = "Reset Power Defaults", Color = Color3.fromHex("#ff3030"), Callback = function()
+    walkSpeedPower = 16
+    jumpPower = 50
+    speedEnabled = false
+    jumpEnabled = false
+end })
 
-TabExploits:Button({
-    Title = "Reset Power Defaults",
-    Color = Color3.fromHex("#ff3030"),
-    Callback = function()
-        walkSpeedPower = 16
-        jumpPower = 50
-        speedEnabled = false
-        jumpEnabled = false
-    end
-})
-
-local savedParts = {}
-local selectedPartName = "None"
-local tpMode = "Teleport"
-
+-- =============================================================================
+-- [TAB PART TP]
+-- =============================================================================
 local DropdownPart = TabPartTP:Dropdown({ Title = "Select locations", Values = {"None"}, Callback = function(v) selectedPartName = v end })
 local DropdownMode = TabPartTP:Dropdown({ Title = "Mode", Values = {"Teleport", "Tween"}, Value = "Teleport", Callback = function(v) tpMode = v end })
 
@@ -344,56 +376,13 @@ TabPartTP:Button({ Title = "Delete locations", Color = Color3.fromHex("#ff3030")
         DropdownPart:Refresh(savedParts)
     end
 end})
-
 TabPartTP:Divider()
-
-local loopParts = {}
-local loopTweenSpeed = 1
-local loopTweenEnabled = false
-local currentLoopIndex = 1
-local currentTween = nil
-
-local function startLoopTween()
-    if not loopTweenEnabled or #loopParts == 0 then return end
-    local char = player.Character
-    local root = char and char:FindFirstChild("HumanoidRootPart")
-    if not root then return end
-
-    if currentLoopIndex > #loopParts then currentLoopIndex = 1 end
-
-    local targetPart = loopParts[currentLoopIndex]
-    if not targetPart or not targetPart.Parent then
-        table.remove(loopParts, currentLoopIndex)
-        startLoopTween()
-        return
-    end
-
-    if loopTweenSpeed <= 0 then
-        root.CFrame = targetPart.CFrame
-        currentLoopIndex = currentLoopIndex + 1
-        task.wait(0.05)
-        startLoopTween()
-    else
-        currentTween = TweenService:Create(root, TweenInfo.new(loopTweenSpeed, Enum.EasingStyle.Linear), {CFrame = targetPart.CFrame})
-        currentTween.Completed:Connect(function(state)
-            if state == Enum.PlaybackState.Completed and loopTweenEnabled then
-                currentLoopIndex = currentLoopIndex + 1
-                startLoopTween()
-            end
-        end)
-        currentTween:Play()
-    end
-end
 
 TabPartTP:Input({ Title = "Tween Speed", Value = "1", Callback = function(val) loopTweenSpeed = tonumber(val) or 1 end })
 TabPartTP:Toggle({ Title = "start", Callback = function(state)
     loopTweenEnabled = state
-    if state then
-        currentLoopIndex = 1
-        startLoopTween()
-    else
-        if currentTween then currentTween:Cancel() currentTween = nil end
-    end
+    if state then currentLoopIndex = 1; startLoopTween()
+    else if currentTween then currentTween:Cancel() currentTween = nil end end
 end })
 
 TabPartTP:Button({ Title = "Set location", Color = Color3.fromHex("#00d4ff"), Callback = function()
@@ -422,106 +411,18 @@ TabPartTP:Button({ Title = "Reset all locations", Color = Color3.fromHex("#ff303
     currentLoopIndex = 1
 end })
 
-UserInputService.JumpRequest:Connect(function()
-    if infJumpEnabled then
+-- =============================================================================
+-- [TAB PLAYER]
+-- =============================================================================
+TabPlayer:Toggle({ Title = "Anti Void", Callback = function(state) antiVoidEnabled = state end })
+
+TabPlayer:Toggle({
+    Title = "Anti Knockback",
+    Callback = function(state)
+        antiKnockbackEnabled = state
         local char = player.Character
         local humanoid = char and char:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-        end
-    end
-end)
-
-RunService.Stepped:Connect(function()
-    local char = player.Character
-    if not char then return end
-    local root = char:FindFirstChild("HumanoidRootPart")
-    local humanoid = char:FindFirstChildOfClass("Humanoid")
-
-    if noclipEnabled and root then
-        for _, part in pairs(char:GetDescendants()) do if part:IsA("BasePart") then part.CanCollide = false end end
-    end
-
-    if viewEnabled and followPart then
-        local target = Players:FindFirstChild(selectedTargetName)
-        if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-            followPart.CFrame = target.Character.HumanoidRootPart.CFrame
-        end
-    end
-
-    if humanoid then
-        humanoid.WalkSpeed = speedEnabled and walkSpeedPower or 16
-        humanoid.JumpPower = jumpEnabled and jumpPower or 50
-    end
-
-    if flyEnabled and humanoid and bVelocity and bGyro then
-        humanoid.PlatformStand = true
-        local moveDir = Vector3.new(0,0,0)
-        if humanoid.MoveDirection.Magnitude > 0 then
-            local rel = camera.CFrame:VectorToObjectSpace(humanoid.MoveDirection)
-            moveDir = (camera.CFrame.LookVector * -rel.Z) + (camera.CFrame.RightVector * rel.X)
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0,1,0) end
-        if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0,1,0) end
-        bVelocity.Velocity = moveDir.Magnitude > 0 and moveDir.Unit * speed or Vector3.new(0,0,0)
-        bGyro.CFrame = CFrame.lookAt(root.Position, root.Position + camera.CFrame.LookVector)
-    end
-end)
-
-Window:Divider()
-
-local Tab4 = Window:Tab({
-    Title = "setting",
-    Icon = "settings", -- optional
-    Locked = false,
-})
-
-local Button = Tab4:Button({
-    Title = "refresh admin panel",
-    Color = Color3.fromHex("#ff3030"),
-    Justify = "Center",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/admin.lua" ,true))()
-        Window:Destroy()
-    end
-})
-
-local TabPlayer = Section1:Tab({ Title = "Player", Icon = "user" })
-
--- State
-local antiVoidEnabled = false
-local lastSafeCFrame = nil
-local autoVoidOffset = 50
-
-local antiKnockbackEnabled = false
-local knockbackConn = nil
-
-local customGui = nil
-local followerPart = nil
-local targetY = 0
-local showGuiActive = false
-
-local holdUp = false
-local holdDown = false
-local moveSpeed = 25
-
--- Anti Void
-TabPlayer:Toggle({
-    Title = "Anti Void",
-    Callback = function(state)
-        antiVoidEnabled = state
-    end
-})
-
--- Anti Knockback
-TabPlayer:Toggle({
-    Title = "Anti Knockback",
-    Callback = function(state)
-        antiKnockbackEnabled = state
-        local char = player.Character
-        if not char then return end
-        local humanoid = char:FindFirstChildOfClass("Humanoid")
-        local root = char:FindFirstChild("HumanoidRootPart")
+        local root = char and char:FindFirstChild("HumanoidRootPart")
         if not humanoid or not root then return end
 
         if state then
@@ -530,9 +431,7 @@ TabPlayer:Toggle({
             if knockbackConn then knockbackConn:Disconnect() end
             knockbackConn = root.ChildAdded:Connect(function(child)
                 if antiKnockbackEnabled and (child:IsA("BodyVelocity") or child:IsA("BodyGyro") or child:IsA("BodyForce") or child:IsA("VectorForce")) then
-                    task.defer(function()
-                        if child and child.Parent then child:Destroy() end
-                    end)
+                    task.defer(function() if child and child.Parent then child:Destroy() end end)
                 end
             end)
         else
@@ -543,9 +442,10 @@ TabPlayer:Toggle({
     end
 })
 
+-- DIVIDER DI BAWAH ANTI VOID & ANTI KNOCKBACK
 TabPlayer:Divider()
 
--- Show GUI
+-- SHOW GUI TOGGLE FOR CONTROLLING POROS Y PLATFORM
 TabPlayer:Toggle({
     Title = "Show GUI",
     Callback = function(state)
@@ -561,216 +461,7 @@ TabPlayer:Toggle({
             followerPart.Name = "FollowerPart"
             followerPart.Size = Vector3.new(6,1,6)
             followerPart.Anchored = true
-            followerPart.CanCollide = true
-            followerPart.Material = Enum.Material.Neon
-            followerPart.Color = Color3.fromRGB(0,212,255)
-            followerPart.Transparency = 0.2
-            followerPart.TopSurface = Enum.SurfaceType.Smooth
-            followerPart.BottomSurface = Enum.SurfaceType.Smooth
-            if root then
-                followerPart.CFrame = CFrame.new(root.Position.X, startY, root.Position.Z)
-            end
-            followerPart.Parent = workspace
-
-            if customGui then customGui:Destroy() end
-            customGui = Instance.new("ScreenGui")
-            customGui.Name = "IcarusPlayerGUI"
-            customGui.ResetOnSpawn = false
-            customGui.Parent = playerGui
-
-            local shadow = Instance.new("Frame")
-            shadow.Name = "Shadow"
-            shadow.Size = UDim2.fromOffset(140, 170)
-            shadow.Position = UDim2.fromOffset(24, 24)
-            shadow.BackgroundColor3 = Color3.fromRGB(0,0,0)
-            shadow.BackgroundTransparency = 0.7
-            shadow.BorderSizePixel = 0
-            shadow.ZIndex = 0
-            shadow.Parent = customGui
-
-            local shadowCorner = Instance.new("UICorner")
-            shadowCorner.CornerRadius = UDim.new(0,12)
-            shadowCorner.Parent = shadow
-
-            local frame = Instance.new("Frame")
-            frame.Name = "Main"
-            frame.Size = UDim2.fromOffset(140, 170)
-            frame.Position = UDim2.fromOffset(20, 20)
-            frame.BackgroundColor3 = Color3.fromHex("#0a192f")
-            frame.BorderSizePixel = 0
-            frame.Active = true
-            frame.Parent = customGui
-
-            local frameCorner = Instance.new("UICorner")
-            frameCorner.CornerRadius = UDim.new(0,12)
-            frameCorner.Parent = frame
-
-            local stroke = Instance.new("UIStroke")
-            stroke.Color = Color3.fromHex("#38bdf8")
-            stroke.Thickness = 1.2
-            stroke.Transparency = 0.3
-            stroke.Parent = frame
-
-            local gradient = Instance.new("UIGradient")
-            gradient.Color = ColorSequence.new{
-                ColorSequenceKeypoint.new(0, Color3.fromHex("#0a192f")),
-                ColorSequenceKeypoint.new(1, Color3.fromHex("#1e293b"))
-            }
-            gradient.Rotation = 90
-            gradient.Parent = frame
-
-            local title = Instance.new("TextLabel")
-            title.Size = UDim2.new(1, -16, 0, 24)
-            title.Position = UDim2.fromOffset(8, 8)
-            title.BackgroundTransparency = 1
-            title.Text = "Platform Control"
-            title.TextColor3 = Color3.fromHex("#f0f9ff")
-            title.TextSize = 15
-            title.Font = Enum.Font.GothamBold
-            title.TextXAlignment = Enum.TextXAlignment.Left
-            title.Parent = frame
-
-            local yLabel = Instance.new("TextLabel")
-            yLabel.Name = "YLabel"
-            yLabel.Size = UDim2.new(1, -16, 0, 18)
-            yLabel.Position = UDim2.fromOffset(8, 30)
-            yLabel.BackgroundTransparency = 1
-            yLabel.Text = "Y: 0.0"
-            yLabel.TextColor3 = Color3.fromHex("#94a3b8")
-            yLabel.TextSize = 12
-            yLabel.Font = Enum.Font.Gotham
-            yLabel.TextXAlignment = Enum.TextXAlignment.Left
-            yLabel.Parent = frame
-
-            local upBtn = Instance.new("TextButton")
-            upBtn.Name = "UpBtn"
-            upBtn.Size = UDim2.fromOffset(50,50)
-            upBtn.Position = UDim2.fromOffset(15, 55)
-            upBtn.BackgroundColor3 = Color3.fromHex("#1d4ed8")
-            upBtn.Text = "▲"
-            upBtn.TextColor3 = Color3.fromHex("#f0f9ff")
-            upBtn.TextScaled = true
-            upBtn.Font = Enum.Font.GothamBlack
-            upBtn.AutoButtonColor = false
-            upBtn.Parent = frame
-
-            local upCorner = Instance.new("UICorner")
-            upCorner.CornerRadius = UDim.new(0,10)
-            upCorner.Parent = upBtn
-
-            local upStroke = Instance.new("UIStroke")
-            upStroke.Color = Color3.fromHex("#38bdf8")
-            upStroke.Thickness = 1
-            upStroke.Parent = upBtn
-
-            local upGrad = Instance.new("UIGradient")
-            upGrad.Color = ColorSequence.new{
-                ColorSequenceKeypoint.new(0, Color3.fromHex("#3d87ff")),
-                ColorSequenceKeypoint.new(1, Color3.fromHex("#1d4ed8"))
-            }
-            upGrad.Rotation = 90
-            upGrad.Parent = upBtn
-
-            local downBtn = Instance.new("TextButton")
-            downBtn.Name = "DownBtn"
-            downBtn.Size = UDim2.fromOffset(50,50)
-            downBtn.Position = UDim2.fromOffset(75, 55)
-            downBtn.BackgroundColor3 = Color3.fromHex("#1d4ed8")
-            downBtn.Text = "▼"
-            downBtn.TextColor3 = Color3.fromHex("#f0f9ff")
-            downBtn.TextScaled = true
-            downBtn.Font = Enum.Font.GothamBlack
-            downBtn.AutoButtonColor = false
-            downBtn.Parent = frame
-
-            local downCorner = Instance.new("UICorner")
-            downCorner.CornerRadius = UDim.new(0,10)
-            downCorner.Parent = downBtn
-
-            local downStroke = Instance.new("UIStroke")
-            downStroke.Color = Color3.fromHex("#38bdf8")
-            downStroke.Thickness = 1
-            downStroke.Parent = downBtn
-
-            local downGrad = Instance.new("UIGradient")
-            downGrad.Color = ColorSequence.new{
-                ColorSequenceKeypoint.new(0, Color3.fromHex("#3d87ff")),
-local TabPlayer = Section1:Tab({ Title = "Player", Icon = "user" })
-
--- State
-local antiVoidEnabled = false
-local lastSafeCFrame = nil
-local autoVoidOffset = 50
-
-local antiKnockbackEnabled = false
-local knockbackConn = nil
-
-local customGui = nil
-local followerPart = nil
-local targetY = 0
-local showGuiActive = false
-
-local holdUp = false
-local holdDown = false
-local moveSpeed = 25
-
--- Anti Void
-TabPlayer:Toggle({
-    Title = "Anti Void",
-    Callback = function(state)
-        antiVoidEnabled = state
-    end
-})
-
--- Anti Knockback
-TabPlayer:Toggle({
-    Title = "Anti Knockback",
-    Callback = function(state)
-        antiKnockbackEnabled = state
-        local char = player.Character
-        if not char then return end
-        local humanoid = char:FindFirstChildOfClass("Humanoid")
-        local root = char:FindFirstChild("HumanoidRootPart")
-        if not humanoid or not root then return end
-
-        if state then
-            humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
-            humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-            if knockbackConn then knockbackConn:Disconnect() end
-            knockbackConn = root.ChildAdded:Connect(function(child)
-                if antiKnockbackEnabled and (child:IsA("BodyVelocity") or child:IsA("BodyGyro") or child:IsA("BodyForce") or child:IsA("VectorForce")) then
-                    task.defer(function()
-                        if child and child.Parent then child:Destroy() end
-                    end)
-                end
-            end)
-        else
-            humanoid:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
-            humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
-            if knockbackConn then knockbackConn:Disconnect() knockbackConn = nil end
-        end
-    end
-})
-
-TabPlayer:Divider()
-
--- Show GUI
-TabPlayer:Toggle({
-    Title = "Show GUI",
-    Callback = function(state)
-        showGuiActive = state
-        if state then
-            local char = player.Character
-            local root = char and char:FindFirstChild("HumanoidRootPart")
-            local startY = root and (root.Position.Y - 3.5) or 50
-            targetY = startY
-
-            if followerPart then followerPart:Destroy() end
-            followerPart = Instance.new("Part")
-            followerPart.Name = "FollowerPart"
-            followerPart.Size = Vector3.new(6,1,6)
-            followerPart.Anchored = true
-            followerPart.CanCollide = true
+            followerPart.CanCollide = true -- TABRAKAN AKTIF
             followerPart.Material = Enum.Material.Neon
             followerPart.Color = Color3.fromRGB(0,212,255)
             followerPart.Transparency = 0.2
@@ -937,9 +628,7 @@ TabPlayer:Toggle({
                     dragStart = input.Position
                     startPos = frame.Position
                     input.Changed:Connect(function()
-                        if input.UserInputState == Enum.UserInputState.End then
-                            dragging = false
-                        end
+                        if input.UserInputState == Enum.UserInputState.End then dragging = false end
                     end)
                 end
             end)
@@ -966,15 +655,24 @@ TabPlayer:Toggle({
                 if r then targetY = r.Position.Y - 3.5 end
             end)
         else
-            holdUp = false
-            holdDown = false
+            holdUp = false; holdDown = false
             if customGui then customGui:Destroy() customGui = nil end
             if followerPart then followerPart:Destroy() followerPart = nil end
         end
     end
 })
 
--- Loop logic Tab Player
+-- =============================================================================
+-- [UNIFIED HEARTBEAT / STEPPED LOOP]
+-- =============================================================================
+UserInputService.JumpRequest:Connect(function()
+    if infJumpEnabled then
+        local char = player.Character
+        local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+        if humanoid then humanoid:ChangeState(Enum.HumanoidStateType.Jumping) end
+    end
+end)
+
 RunService.Stepped:Connect(function(_, dt)
     local char = player.Character
     if not char then return end
@@ -982,48 +680,81 @@ RunService.Stepped:Connect(function(_, dt)
     local humanoid = char:FindFirstChildOfClass("Humanoid")
     if not root or not humanoid then return end
 
-    local voidHeight = workspace.FallenPartsDestroyHeight + autoVoidOffset
+    -- Noclip Logic
+    if noclipEnabled then
+        for _, part in pairs(char:GetDescendants()) do if part:IsA("BasePart") then part.CanCollide = false end end
+    end
 
-    if root.Position.Y > voidHeight + 10 then
-        if humanoid.FloorMaterial ~= Enum.Material.Air then
-            lastSafeCFrame = root.CFrame
+    -- View Player Logic
+    if viewEnabled and followPart then
+        local target = Players:FindFirstChild(selectedTargetName)
+        if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+            followPart.CFrame = target.Character.HumanoidRootPart.CFrame
         end
     end
 
-    if antiVoidEnabled and root.Position.Y < voidHeight then
-        if lastSafeCFrame then
-            root.CFrame = lastSafeCFrame + Vector3.new(0,3,0)
-        else
-            root.CFrame = CFrame.new(root.Position.X, voidHeight + 100, root.Position.Z)
+    -- Walkspeed / Jamppower Multiplier
+    humanoid.WalkSpeed = speedEnabled and walkSpeedPower or 16
+    humanoid.JumpPower = jumpEnabled and jumpPower or 50
+
+    -- Fly Logic
+    if flyEnabled and bVelocity and bGyro then
+        humanoid.PlatformStand = true
+        local moveDir = Vector3.new(0,0,0)
+        if humanoid.MoveDirection.Magnitude > 0 then
+            local rel = camera.CFrame:VectorToObjectSpace(humanoid.MoveDirection)
+            moveDir = (camera.CFrame.LookVector * -rel.Z) + (camera.CFrame.RightVector * rel.X)
         end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDir += Vector3.new(0,1,0) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDir -= Vector3.new(0,1,0) end
+        bVelocity.Velocity = moveDir.Magnitude > 0 and moveDir.Unit * speed or Vector3.new(0,0,0)
+        bGyro.CFrame = CFrame.lookAt(root.Position, root.Position + camera.CFrame.LookVector)
+    end
+
+    -- Anti Void Logic
+    local voidHeight = (workspace.FallenPartsDestroyHeight or -500) + autoVoidOffset
+    if root.Position.Y > voidHeight + 10 then
+        if humanoid.FloorMaterial ~= Enum.Material.Air then lastSafeCFrame = root.CFrame end
+    end
+    if antiVoidEnabled and root.Position.Y < voidHeight then
+        if lastSafeCFrame then root.CFrame = lastSafeCFrame + Vector3.new(0,3,0)
+        else root.CFrame = CFrame.new(root.Position.X, voidHeight + 100, root.Position.Z) end
         root.AssemblyLinearVelocity = Vector3.zero
     end
 
-    if antiKnockbackEnabled then
-        if root.AssemblyLinearVelocity.Magnitude > 100 then
-            root.AssemblyLinearVelocity = Vector3.new(
-                root.AssemblyLinearVelocity.X * 0.2,
-                root.AssemblyLinearVelocity.Y,
-                root.AssemblyLinearVelocity.Z * 0.2
-            )
-        end
+    -- Anti Knockback Logic
+    if antiKnockbackEnabled and root.AssemblyLinearVelocity.Magnitude > 100 then
+        root.AssemblyLinearVelocity = Vector3.new(root.AssemblyLinearVelocity.X * 0.2, root.AssemblyLinearVelocity.Y, root.AssemblyLinearVelocity.Z * 0.2)
     end
 
+    -- Follower Part (Lock X and Z, Manual lock Y Axis)
     if showGuiActive and followerPart then
         if holdUp then targetY += moveSpeed * dt end
         if holdDown then targetY -= moveSpeed * dt end
 
+        -- X & Z mengambil data Player, sedangkan Y statis berdasarkan tombol GUI
         local targetPos = Vector3.new(root.Position.X, targetY, root.Position.Z)
         followerPart.CFrame = CFrame.new(targetPos)
 
         if customGui and customGui.Parent then
             local main = customGui:FindFirstChild("Main")
-            if main then
-                local yLabel = main:FindFirstChild("YLabel")
-                if yLabel then
-                    yLabel.Text = string.format("Y: %.1f", targetY)
-                end
-            end
+            local yLabel = main and main:FindFirstChild("YLabel")
+            if yLabel then yLabel.Text = string.format("Y: %.1f", targetY) end
         end
     end
 end)
+
+-- =============================================================================
+-- [SETTINGS TAB & REFRES PANEL]
+-- =============================================================================
+Window:Divider()
+local Tab4 = Window:Tab({ Title = "setting", Icon = "settings", Locked = false })
+Tab4:Button({
+    Title = "refresh admin panel",
+    Color = Color3.fromHex("#ff3030"),
+    Justify = "Center",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/admin.lua" ,true))()
+        Window:Destroy()
+    end
+})

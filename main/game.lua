@@ -503,6 +503,7 @@ end
 local list7 = {
     {name = "infinite yield", url = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", auto_execute = false},
     {name = "Nameless Admin", url = "https://raw.githubusercontent.com/ltseverydayyou/Nameless-Admin/main/Source.lua", auto_execute = false},
+    {name = "Icarus admin", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/admin.lua", auto_execute = false},
     {name = "vape v4", url = "https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/NewMainScript.lua", auto_execute = false},
     {name = "dex explorer", url = "https://rawscripts.net/raw/Universal-Script-Dex-Explorer-DPP-73687", auto_execute = false},
     {name = "AK ADMIN", url = "https://absent.wtf/AKADMIN.lua", auto_execute = false},
@@ -588,8 +589,10 @@ for i, item in ipairs(list8) do
 end
 
 local list9 = {
-    {name = "chiyo", url = "https://raw.githubusercontent.com/kaisenlmao/loader/refs/heads/main/chiyo.lua", auto_execute = false},
+    {name = "chiyo hub", url = "https://raw.githubusercontent.com/kaisenlmao/loader/refs/heads/main/chiyo.lua", auto_execute = false},
     {name = "Speed Hub X", url = "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", auto_execute = false},
+    {name = "alchemy hub", url = "https://raw.githubusercontent.com/x2neptunereal/Alchemy/main/gateway.luau", auto_execute = false},
+    {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
 }
 
 SubTab10:AddLabel("• slime rng hub")
@@ -638,7 +641,7 @@ setGroupBox:AddLabel("restart ui")
 setGroupBox:AddButton({
     Text = "restart",
     Func = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/main/main",true))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/game.lua",true))()
         Library:Unload()
     end
 })

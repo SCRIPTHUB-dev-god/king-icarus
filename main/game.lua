@@ -27,6 +27,7 @@ if not success then return end
 
 local Loading = Library:CreateLoading({
     Title = "Icarus game hub",
+    Icon = "star",
     TotalSteps = 4,
 })
  
@@ -56,11 +57,12 @@ Loading:SetDescription("Ready to start!")
 task.wait(1)
  
 Loading:SetCurrentStep(4)
+Library:Notify("Loading finish", 5)
 Loading:Continue()
 
 local Window = Library:CreateWindow({
     Title = "ICARUS",
-    Footer = "universal script/version 1.1.0",
+    Footer = "universal script/version 1.1.1",
     Center = true,
     AutoShow = false,
     TabPadding = 8,
@@ -68,6 +70,35 @@ local Window = Library:CreateWindow({
     CornerRadius = 4,
     Icon = "star"
 })
+
+-- Draggable Label
+local DraggableLabel = Library:AddDraggableLabel("Obsidian")
+DraggableLabel:SetVisible(true)
+
+-- FPS Counter
+local FrameTimer = tick()
+local FrameCounter = 0
+local FPS = 60
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    FrameCounter += 1
+
+    if (tick() - FrameTimer) >= 1 then
+        FPS = FrameCounter
+        FrameTimer = tick()
+        FrameCounter = 0
+    end
+
+    -- Hours : Minutes
+    local CurrentTime = os.date("%H:%M")
+
+    DraggableLabel:SetText(
+        ("ICARUS | FPS: %s | %s"):format(
+            math.floor(FPS),
+            CurrentTime
+        )
+    )
+end)
 
 Window:AddDialog("EmptyDialogueIdx", {
     Title = "wellcome to ICARUS games hub",
@@ -99,6 +130,33 @@ infoGroupBox:AddButton("Copy Discord", function()
     end
 end)
 
+local gameid = Tab:AddRightGroupbox("game id", "info")
+
+--// Services
+local UserInputService = game:GetService("UserInputService")
+
+--// IDs
+local PlaceId = game.PlaceId
+
+--// Platform Detect
+local Platform = UserInputService.TouchEnabled and "Mobile" or "PC"
+
+--// Labels
+gameid:AddLabel("Place ID : " .. tostring(PlaceId))
+gameid:AddLabel("Platform : " .. Platform)
+
+--// Copy Function
+local function CopyToClipboard(text)
+    if setclipboard then
+        setclipboard(text)
+    end
+end
+
+--// Buttons
+gameid:AddButton("Copy Place ID", function()
+    CopyToClipboard(PlaceId)
+end)
+
 local Tab = Window:AddTab("Main", "joystick")
 local LeftTabBox = Tab:AddLeftTabbox()
 local SubTab1 = LeftTabBox:AddTab("", "star")
@@ -108,6 +166,7 @@ local SubTab4 = LeftTabBox:AddTab("", "sailboat")
 local SubTab5 = LeftTabBox:AddTab("", "sport-shoe")
 local SubTab6 = LeftTabBox:AddTab("", "sailboat")
 local SubTab7 = LeftTabBox:AddTab("", "bird")
+local SubTab10 = LeftTabBox:AddTab("", "dices")
 
 local RightTabBox = Tab:AddRightTabbox()
 local SubTab8 = RightTabBox:AddTab("", "shield")
@@ -528,6 +587,48 @@ for i, item in ipairs(list8) do
     SubTab9:AddDivider()
 end
 
+local list9 = {
+    {name = "chiyo", url = "https://raw.githubusercontent.com/kaisenlmao/loader/refs/heads/main/chiyo.lua", auto_execute = false},
+    {name = "Speed Hub X", url = "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", auto_execute = false},
+}
+
+SubTab10:AddLabel("• slime rng hub")
+
+SubTab10:AddDivider()
+
+for i, item in ipairs(list9) do
+    local toggleName = "AutoExec_" .. item.name
+    local isAutoExec = SavedData[toggleName] or false
+
+    SubTab10:AddLabel(item.name)
+    
+    SubTab10:AddButton({
+        Text = "Load Script",
+        Func = function()
+            loadstring(game:HttpGet(item.url))()
+        end
+    })
+
+    local MyToggle = SubTab10:AddToggle(toggleName, {
+        Text = "Auto Execute",
+        Default = isAutoExec
+    })
+
+    MyToggle:OnChanged(function()
+        SaveConfig(toggleName, MyToggle.Value)
+    end)
+
+    if isAutoExec then
+        task.spawn(function()
+            pcall(function()
+                loadstring(game:HttpGet(item.url))()
+            end)
+        end)
+    end
+
+    SubTab10:AddDivider()
+end
+
 local Tab = Window:AddTab("Setting", "settings")
 
 local setGroupBox = Tab:AddLeftGroupbox("Setting", "settings")
@@ -606,6 +707,8 @@ seGroupBox:AddDivider()
 
 seGroupBox:AddLabel("logs update")
 
-seGroupBox:AddLabel("• upgrade group box")
+seGroupBox:AddLabel("• new game")
 
-seGroupBox:AddLabel("• new code")
+seGroupBox:AddLabel("• new groupbox in support")
+
+seGroupBox:AddLabel("• new watermark")

@@ -53,7 +53,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/deivi
 
 local Window = Library:CreateWindow({
     Title = "icarus key",
-    Footer = "version: example",
+    Footer = "key for : admin",
     Icon = "star",
     NotifySide = "Right",
 })
@@ -72,12 +72,13 @@ if savedKey == correctKey then
     Library:Notify("Auto login work", 1)
     task.wait(2)
     loadstring(game:HttpGet("https://pastefy.app/vaD2C0aY/rawa"))()
+    Library:Unload()
     return
 end
 
 getkey:AddInput("MyTextbox", {
     Default = "",
-    Numeric = true,
+    Numeric = false,
     Finished = false,
     ClearTextOnFocus = false,
     Text = "paste key here",
@@ -96,6 +97,7 @@ getkey:AddButton({
             Library:Notify("key valid", 2)
             task.wait(1)
             loadstring(game:HttpGet("https://pastefy.app/vaD2C0aY/rawa"))()
+            Library:Unload()
         else
             Library:Notify("Check key", 1)
             task.wait(1)

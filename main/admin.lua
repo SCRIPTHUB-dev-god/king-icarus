@@ -1,58 +1,70 @@
 local correctKey = {"icarus_0001", "dev"}
 local enteredKey = ""
-local scriptCode = 'loadstring(game:HttpGet("https://pastefy.app/vaD2C0aY/rawa"))()'
 
 local HttpService = game:GetService("HttpService")
 
 local KeyManager = {}
 local FOLDER = "KeySystem"
-local FILE = FOLDER .. "/saved_key.json"
+local FILE = FOLDER.. "/saved_key.json"
 
 if not isfolder(FOLDER) then
     makefolder(FOLDER)
 end
 
 function KeyManager.Save(key)
-    local data = {
-        key = key,
-        savedAt = os.time()
-    }
-    local ok = pcall(function()
+    local data = { key = key, savedAt = os.time() }
+    local ok, err = pcall(function()
         writefile(FILE, HttpService:JSONEncode(data))
     end)
+    print("[KeyManager] Save:", ok, err)
     return ok
 end
 
 function KeyManager.Load()
-    if not isfile(FILE) then return nil end
+    if not isfile(FILE) then
+        print("[KeyManager] No file")
+        return nil
+    end
     local ok, content = pcall(readfile, FILE)
-    if not ok then return nil end
+    if not ok then
+        print("[KeyManager] Read fail")
+        return nil
+    end
     local ok2, data = pcall(function()
         return HttpService:JSONDecode(content)
     end)
     if ok2 and data and data.key then
-        return data.key, data.savedAt
+        print("[KeyManager] Loaded key:", data.key)
+        return data.key
     end
+    print("[KeyManager] Decode fail")
     return nil
 end
 
 function KeyManager.Delete()
     if isfile(FILE) then
-        delfile(FILE)
+        pcall(delfile, FILE)
+        print("[KeyManager] File deleted")
     end
 end
 
-function KeyManager.Has()
-    return isfile(FILE)
-end
-
 local function isValidKey(key)
+    if not key or key == "" then return false end
     for _, v in ipairs(correctKey) do
         if key == v then
             return true
         end
     end
     return false
+end
+
+local function runMainScript()
+    print("[Loader] Fetching script...")
+    local ok, err = pcall(function()
+        local code = game:HttpGet("https://pastefy.app/vaD2C0aY/raw")
+        loadstring(code)()
+    end)
+    print("[Loader] Run result:", ok, err)
 end
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/Obsidian/refs/heads/main/Library.lua"))()
@@ -75,9 +87,10 @@ getkey:AddDivider()
 
 local savedKey = KeyManager.Load()
 if isValidKey(savedKey) then
-    Library:Notify("Auto login work", 1)
-    task.wait(2)
-    loadstring(scriptCode)()
+    Library:Notify("Auto login work", 2)
+    print("[Auto] Valid saved key")
+    task.wait(0.5)
+    runMainScript()
     Library:Unload()
     return
 end
@@ -90,25 +103,27 @@ getkey:AddInput("MyTextbox", {
     Text = "paste key here",
     Callback = function(Value)
         enteredKey = Value
+        print("[Input] enteredKey =", enteredKey)
     end,
 })
 
 getkey:AddButton({
     Text = "Check Key",
     Func = function()
+        print("[Check] Checking:", enteredKey)
+        Library:Notify("Check key", 1)
+        task.wait(0.5)
         if isValidKey(enteredKey) then
-            Library:Notify("Check key", 1)
-            task.wait(1)
             KeyManager.Save(enteredKey)
             Library:Notify("key valid", 2)
-            task.wait(1)
-            loadstring(scriptCode)()
+            print("[Check] Valid")
+            task.wait(0.5)
+            runMainScript()
             Library:Unload()
         else
-            Library:Notify("Check key", 1)
-            task.wait(1)
             KeyManager.Delete()
             Library:Notify("Key invalid", 3)
+            print("[Check] Invalid")
         end
     end
 })

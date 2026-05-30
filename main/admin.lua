@@ -1,12 +1,12 @@
-local correctKey = "icarus_0001", "dev"
-local enteredKey = "",
-local script = "loadstring(game:HttpGet("https://pastefy.app/vaD2C0aY/rawa"))()"
+local correctKey = {"icarus_0001", "dev"}
+local enteredKey = ""
+local scriptCode = 'loadstring(game:HttpGet("https://pastefy.app/vaD2C0aY/rawa"))()'
 
 local HttpService = game:GetService("HttpService")
 
 local KeyManager = {}
 local FOLDER = "KeySystem"
-local FILE = FOLDER.. "/saved_key.json"
+local FILE = FOLDER .. "/saved_key.json"
 
 if not isfolder(FOLDER) then
     makefolder(FOLDER)
@@ -17,14 +17,10 @@ function KeyManager.Save(key)
         key = key,
         savedAt = os.time()
     }
-    local ok, err = pcall(function()
+    local ok = pcall(function()
         writefile(FILE, HttpService:JSONEncode(data))
     end)
-    if ok then
-        return true
-    else
-        return false
-    end
+    return ok
 end
 
 function KeyManager.Load()
@@ -50,6 +46,15 @@ function KeyManager.Has()
     return isfile(FILE)
 end
 
+local function isValidKey(key)
+    for _, v in ipairs(correctKey) do
+        if key == v then
+            return true
+        end
+    end
+    return false
+end
+
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/Obsidian/refs/heads/main/Library.lua"))()
 
 local Window = Library:CreateWindow({
@@ -69,10 +74,10 @@ getkey:AddLabel("paste your key in the input", true)
 getkey:AddDivider()
 
 local savedKey = KeyManager.Load()
-if savedKey == correctKey then
+if isValidKey(savedKey) then
     Library:Notify("Auto login work", 1)
     task.wait(2)
-    print(script)
+    loadstring(scriptCode)()
     Library:Unload()
     return
 end
@@ -91,13 +96,13 @@ getkey:AddInput("MyTextbox", {
 getkey:AddButton({
     Text = "Check Key",
     Func = function()
-        if enteredKey == correctKey then
+        if isValidKey(enteredKey) then
             Library:Notify("Check key", 1)
             task.wait(1)
             KeyManager.Save(enteredKey)
             Library:Notify("key valid", 2)
             task.wait(1)
-            print(script)
+            loadstring(scriptCode)()
             Library:Unload()
         else
             Library:Notify("Check key", 1)

@@ -1,5 +1,6 @@
 local correctKey = "icarus_0001", "dev"
-local enteredKey = ""
+local enteredKey = "",
+local script = "loadstring(game:HttpGet("https://pastefy.app/vaD2C0aY/rawa"))()"
 
 local HttpService = game:GetService("HttpService")
 
@@ -71,7 +72,7 @@ local savedKey = KeyManager.Load()
 if savedKey == correctKey then
     Library:Notify("Auto login work", 1)
     task.wait(2)
-    loadstring(game:HttpGet("https://pastefy.app/vaD2C0aY/rawa"))()
+    print(script)
     Library:Unload()
     return
 end
@@ -96,7 +97,7 @@ getkey:AddButton({
             KeyManager.Save(enteredKey)
             Library:Notify("key valid", 2)
             task.wait(1)
-            loadstring(game:HttpGet("https://pastefy.app/vaD2C0aY/rawa"))()
+            print(script)
             Library:Unload()
         else
             Library:Notify("Check key", 1)

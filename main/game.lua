@@ -164,7 +164,6 @@ local SubTab2 = LeftTabBox:AddTab("", "sprout")
 local SubTab3 = LeftTabBox:AddTab("", "apple")
 local SubTab4 = LeftTabBox:AddTab("", "sailboat")
 local SubTab5 = LeftTabBox:AddTab("", "sport-shoe")
-local SubTab6 = LeftTabBox:AddTab("", "sailboat")
 local SubTab7 = LeftTabBox:AddTab("", "bird")
 local SubTab10 = LeftTabBox:AddTab("", "dices")
 
@@ -290,7 +289,7 @@ local list2 = {
         auto_execute = false
     },
     {name = "gravity hub", url = "https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua", auto_execute = false},
-    {name = "moonlight hub", url = "https://raw.githubusercontent.com/Dev-Moonlight/Moonlight/refs/heads/main/Main", auto_execute = false},
+    {name = "moonlight hub", url = "https://minhz-hub.vercel.app/main_ui", auto_execute = false},
 }
 
 SubTab3:AddLabel("• Blox Fruit hub")

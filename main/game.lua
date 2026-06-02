@@ -414,49 +414,6 @@ for i, item in ipairs(list4) do
     SubTab5:AddDivider()
 end
 
-local list5 = {
-    {name = "solix hub", url = "https://raw.githubusercontent.com/bao8jl/solixhub/main/loader", auto_execute = false},
-    {name = "chiyo hub", url = "https://raw.githubusercontent.com/kaisenlmao/loader/refs/heads/main/chiyo.lua", auto_execute = false},
-    {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
-}
-
-SubTab6:AddLabel("• sailor piece hub")
-
-SubTab6:AddDivider()
-
-for i, item in ipairs(list5) do
-    local toggleName = "AutoExec_" .. item.name
-    local isAutoExec = SavedData[toggleName] or false
-
-    SubTab6:AddLabel(item.name)
-    
-    SubTab6:AddButton({
-        Text = "Load Script",
-        Func = function()
-            loadstring(game:HttpGet(item.url))()
-        end
-    })
-
-    local MyToggle = SubTab6:AddToggle(toggleName, {
-        Text = "Auto Execute",
-        Default = isAutoExec
-    })
-
-    MyToggle:OnChanged(function()
-        SaveConfig(toggleName, MyToggle.Value)
-    end)
-
-    if isAutoExec then
-        task.spawn(function()
-            pcall(function()
-                loadstring(game:HttpGet(item.url))()
-            end)
-        end)
-    end
-
-    SubTab6:AddDivider()
-end
-
 local list6 = {
     {name = "atlas hub", url = "https://rawscripts.net/raw/Bee-Swarm-Simulator-Atlas-49277", auto_execute = false},
     {name = "ronix hub", url = "https://api.luarmor.net/files/v3/loaders/fda9babd071d6b536a745774b6bc681c.lua", auto_execute = false},

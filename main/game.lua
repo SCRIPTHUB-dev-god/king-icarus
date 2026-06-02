@@ -120,15 +120,18 @@ local infoGroupBox = Tab:AddLeftGroupbox("info", "info")
 
 local Label = infoGroupBox:AddLabel("support my discord")
 
-infoGroupBox:AddButton("Copy Discord", function()
-    local link = "https://discord.gg/mjhqEMRr"
-    
-    if setclipboard then
-        setclipboard(link)
-    elseif toclipboard then
-        toclipboard(link)
+infoGroupBox:AddButton({
+    Text = "Copy Discord",
+    Func = function()
+        local link = "https://discord.gg/mjhqEMRr"
+        
+        if setclipboard then
+            setclipboard(link)
+        elseif toclipboard then
+            toclipboard(link)
+        end
     end
-end)
+})
 
 local gameid = Tab:AddRightGroupbox("game id", "info")
 
@@ -153,9 +156,12 @@ local function CopyToClipboard(text)
 end
 
 --// Buttons
-gameid:AddButton("Copy Place ID", function()
-    CopyToClipboard(PlaceId)
-end)
+gameid:AddButton({
+    Text = "Copy Place ID",
+    Func = function()
+        CopyToClipboard(PlaceId)
+    end
+})
 
 local Tab = Window:AddTab("Main", "joystick")
 local LeftTabBox = Tab:AddLeftTabbox()
@@ -192,7 +198,11 @@ for i, item in ipairs(list) do
     SubTab1:AddButton({
         Text = "Load Script",
         Func = function()
-            loadstring(game:HttpGet(item.url))()
+            if item.url:sub(1, 4) == "http" then
+                loadstring(game:HttpGet(item.url))()
+            else
+                loadstring(item.url)()
+            end
         end
     })
 
@@ -208,7 +218,11 @@ for i, item in ipairs(list) do
     if isAutoExec then
         task.spawn(function()
             pcall(function()
-                loadstring(game:HttpGet(item.url))()
+                if item.url:sub(1, 4) == "http" then
+                    loadstring(game:HttpGet(item.url))()
+                else
+                    loadstring(item.url)()
+                end
             end)
         end)
     end
@@ -237,7 +251,11 @@ for i, item in ipairs(list1) do
     SubTab2:AddButton({
         Text = "Load Script",
         Func = function()
-            loadstring(game:HttpGet(item.url))()
+            if item.url:sub(1, 4) == "http" then
+                loadstring(game:HttpGet(item.url))()
+            else
+                loadstring(item.url)()
+            end
         end
     })
 
@@ -253,7 +271,11 @@ for i, item in ipairs(list1) do
     if isAutoExec then
         task.spawn(function()
             pcall(function()
-                loadstring(game:HttpGet(item.url))()
+                if item.url:sub(1, 4) == "http" then
+                    loadstring(game:HttpGet(item.url))()
+                else
+                    loadstring(item.url)()
+                end
             end)
         end)
     end
@@ -305,7 +327,11 @@ for i, item in ipairs(list2) do
     SubTab3:AddButton({
         Text = "Load Script",
         Func = function()
-            loadstring(game:HttpGet(item.url))()
+            if item.url:sub(1, 4) == "http" then
+                loadstring(game:HttpGet(item.url))()
+            else
+                loadstring(item.url)()
+            end
         end
     })
 
@@ -321,7 +347,11 @@ for i, item in ipairs(list2) do
     if isAutoExec then
         task.spawn(function()
             pcall(function()
-                loadstring(game:HttpGet(item.url))()
+                if item.url:sub(1, 4) == "http" then
+                    loadstring(game:HttpGet(item.url))()
+                else
+                    loadstring(item.url)()
+                end
             end)
         end)
     end
@@ -347,7 +377,11 @@ for i, item in ipairs(list3) do
     SubTab4:AddButton({
         Text = "Load Script",
         Func = function()
-            loadstring(game:HttpGet(item.url))()
+            if item.url:sub(1, 4) == "http" then
+                loadstring(game:HttpGet(item.url))()
+            else
+                loadstring(item.url)()
+            end
         end
     })
 
@@ -363,7 +397,11 @@ for i, item in ipairs(list3) do
     if isAutoExec then
         task.spawn(function()
             pcall(function()
-                loadstring(game:HttpGet(item.url))()
+                if item.url:sub(1, 4) == "http" then
+                    loadstring(game:HttpGet(item.url))()
+                else
+                    loadstring(item.url)()
+                end
             end)
         end)
     end
@@ -390,7 +428,11 @@ for i, item in ipairs(list4) do
     SubTab5:AddButton({
         Text = "Load Script",
         Func = function()
-            loadstring(game:HttpGet(item.url))()
+            if item.url:sub(1, 4) == "http" then
+                loadstring(game:HttpGet(item.url))()
+            else
+                loadstring(item.url)()
+            end
         end
     })
 
@@ -406,7 +448,11 @@ for i, item in ipairs(list4) do
     if isAutoExec then
         task.spawn(function()
             pcall(function()
-                loadstring(game:HttpGet(item.url))()
+                if item.url:sub(1, 4) == "http" then
+                    loadstring(game:HttpGet(item.url))()
+                else
+                    loadstring(item.url)()
+                end
             end)
         end)
     end
@@ -432,7 +478,11 @@ for i, item in ipairs(list6) do
     SubTab7:AddButton({
         Text = "Load Script",
         Func = function()
-            loadstring(game:HttpGet(item.url))()
+            if item.url:sub(1, 4) == "http" then
+                loadstring(game:HttpGet(item.url))()
+            else
+                loadstring(item.url)()
+            end
         end
     })
 
@@ -448,7 +498,11 @@ for i, item in ipairs(list6) do
     if isAutoExec then
         task.spawn(function()
             pcall(function()
-                loadstring(game:HttpGet(item.url))()
+                if item.url:sub(1, 4) == "http" then
+                    loadstring(game:HttpGet(item.url))()
+                else
+                    loadstring(item.url)()
+                end
             end)
         end)
     end
@@ -478,7 +532,11 @@ for i, item in ipairs(list7) do
     SubTab8:AddButton({
         Text = "Load Script",
         Func = function()
-            loadstring(game:HttpGet(item.url))()
+            if item.url:sub(1, 4) == "http" then
+                loadstring(game:HttpGet(item.url))()
+            else
+                loadstring(item.url)()
+            end
         end
     })
 
@@ -494,7 +552,11 @@ for i, item in ipairs(list7) do
     if isAutoExec then
         task.spawn(function()
             pcall(function()
-                loadstring(game:HttpGet(item.url))()
+                if item.url:sub(1, 4) == "http" then
+                    loadstring(game:HttpGet(item.url))()
+                else
+                    loadstring(item.url)()
+                end
             end)
         end)
     end
@@ -520,7 +582,11 @@ for i, item in ipairs(list8) do
     SubTab9:AddButton({
         Text = "Load Script",
         Func = function()
-            loadstring(game:HttpGet(item.url))()
+            if item.url:sub(1, 4) == "http" then
+                loadstring(game:HttpGet(item.url))()
+            else
+                loadstring(item.url)()
+            end
         end
     })
 
@@ -536,7 +602,11 @@ for i, item in ipairs(list8) do
     if isAutoExec then
         task.spawn(function()
             pcall(function()
-                loadstring(game:HttpGet(item.url))()
+                if item.url:sub(1, 4) == "http" then
+                    loadstring(game:HttpGet(item.url))()
+                else
+                    loadstring(item.url)()
+                end
             end)
         end)
     end
@@ -564,7 +634,11 @@ for i, item in ipairs(list9) do
     SubTab10:AddButton({
         Text = "Load Script",
         Func = function()
-            loadstring(game:HttpGet(item.url))()
+            if item.url:sub(1, 4) == "http" then
+                loadstring(game:HttpGet(item.url))()
+            else
+                loadstring(item.url)()
+            end
         end
     })
 
@@ -580,7 +654,11 @@ for i, item in ipairs(list9) do
     if isAutoExec then
         task.spawn(function()
             pcall(function()
-                loadstring(game:HttpGet(item.url))()
+                if item.url:sub(1, 4) == "http" then
+                    loadstring(game:HttpGet(item.url))()
+                else
+                    loadstring(item.url)()
+                end
             end)
         end)
     end
@@ -641,7 +719,6 @@ local function doRejoin()
     TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
 end
 
--- dua tombol terpisah, bukan bertumpuk
 setGroupBox:AddButton({
     Text = "Server Hop",
     Func = doServerHop
@@ -666,8 +743,8 @@ seGroupBox:AddDivider()
 
 seGroupBox:AddLabel("logs update")
 
-seGroupBox:AddLabel("• new game")
+seGroupBox:AddLabel("• bug fixed")
 
-seGroupBox:AddLabel("• new groupbox in support")
+seGroupBox:AddLabel("• delete tab sailor piece")
 
-seGroupBox:AddLabel("• new watermark")
+seGroupBox:AddLabel("• new script blox fruit")

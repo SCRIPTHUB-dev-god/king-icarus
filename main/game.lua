@@ -49,7 +49,7 @@ Loading.Sidebar:AddLabel("• mspaint")
 Loading.Sidebar:AddLabel("• Icarus community")
 Loading.Sidebar:AddLabel("• others")
 Loading.Sidebar:AddLabel("-- version Icarus game hub --")
-Loading.Sidebar:AddLabel("version : 1.0.5")
+Loading.Sidebar:AddLabel("version : 1.1.1")
 task.wait(1)
  
 Loading:SetCurrentStep(3)
@@ -311,7 +311,7 @@ local list2 = {
         auto_execute = false
     },
     {name = "gravity hub", url = "https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua", auto_execute = false},
-    {name = "moonlight hub", url = "https://minhz-hub.vercel.app/main_ui", auto_execute = false},
+    {name = "minhz hub", url = "https://minhz-hub.vercel.app/main_ui", auto_execute = false},
 }
 
 SubTab3:AddLabel("• Blox Fruit hub")
@@ -675,8 +675,11 @@ setGroupBox:AddLabel("restart ui")
 setGroupBox:AddButton({
     Text = "restart",
     Func = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/game.lua",true))()
-        Library:Unload()
+        if Library then Library:Unload() end
+        task.spawn(function()
+            task.wait()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/game.lua",true))()
+        end)
     end
 })
 

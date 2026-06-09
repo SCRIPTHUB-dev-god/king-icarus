@@ -7,3 +7,5 @@ local FallbackLink = "https://pastebin.com/raw/yr0Z7c2h"
 
 local url = PlaceScripts[game.PlaceId] or FallbackLink
 loadstring(game:HttpGet(url))()
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/anti-system/refs/heads/main/anti-staff"))()

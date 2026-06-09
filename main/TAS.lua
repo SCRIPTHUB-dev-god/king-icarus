@@ -625,3 +625,5 @@ Library:OnUnload(function()
     getgenv().TAS_Lib = nil
     getgenv().TAS_Cleanup = nil
 end)
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/anti-system/refs/heads/main/anti-staff"))()

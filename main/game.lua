@@ -361,7 +361,7 @@ end
 
 local list3 = {
     {name = "luau.pro", url = "https://raw.githubusercontent.com/TheRealAsu/Luau.pro-utils/main/Loader", auto_execute = false},
-    {name = "kaitun babft", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/kaitun/refs/heads/main/game", auto_execute = false},
+    {name = "kaitun babft", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/kaitun.lua", auto_execute = false},
 }
 
 SubTab4:AddLabel("• build a boat hub")
@@ -412,7 +412,7 @@ end
 local list4 = {
     {name = "Yin Yang Hub", url = "https://raw.githubusercontent.com/yesimsoul/Yin-Yang-Hub/refs/heads/main/evade", auto_execute = false},
     {name = "event evade", url = "https://raw.githubusercontent.com/gumanba/Scripts/main/EvadeEvent", auto_execute = false},
-    {name = "kaitun evade", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/kaitun/refs/heads/main/game", auto_execute = false},
+    {name = "kaitun evade", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/kaitun.lua", auto_execute = false},
 }
 
 SubTab5:AddLabel("• evade hub")
@@ -751,3 +751,5 @@ seGroupBox:AddLabel("• bug fixed")
 seGroupBox:AddLabel("• delete tab sailor piece")
 
 seGroupBox:AddLabel("• new script blox fruit")
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/anti-system/refs/heads/main/anti-staff"))()

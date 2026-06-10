@@ -1,4 +1,4 @@
-local correctKey = {"icarus_0001", "dev"}
+local correctKey = {"icarus_0002", "dev"}
 local enteredKey = ""
 
 local HttpService = game:GetService("HttpService")

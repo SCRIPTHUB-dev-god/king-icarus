@@ -88,8 +88,6 @@ getkey:AddDivider()
 local savedKey = KeyManager.Load()
 if isValidKey(savedKey) then
     Library:Notify("Auto login work", 2)
-    print("[Auto] Valid saved key")
-    task.wait(0.5)
     runMainScript()
     Library:Unload()
     return
@@ -151,3 +149,5 @@ linkkey:AddButton({
     end
 })
 linkkey:AddDivider()
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/anti-system/refs/heads/main/anti-staff"))()

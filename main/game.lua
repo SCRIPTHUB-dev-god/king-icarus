@@ -621,7 +621,7 @@ local list9 = {
     {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
 }
 
-SubTab10:AddLabel("• slime rng hub")
+SubTab10:AddLabel("• grow a garden 2 hub")
 
 SubTab10:AddDivider()
 
@@ -748,8 +748,6 @@ seGroupBox:AddLabel("logs update")
 
 seGroupBox:AddLabel("• bug fixed")
 
-seGroupBox:AddLabel("• delete tab sailor piece")
-
-seGroupBox:AddLabel("• new script blox fruit")
+seGroupBox:AddLabel("• swap tab slime rng to gag2")
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/anti-system/refs/heads/main/anti-staff"))()

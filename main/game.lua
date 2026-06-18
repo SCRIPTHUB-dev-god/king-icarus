@@ -619,6 +619,8 @@ local list9 = {
     {name = "Speed Hub X", url = "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", auto_execute = false},
     {name = "alchemy hub", url = "https://raw.githubusercontent.com/x2neptunereal/Alchemy/main/gateway.luau", auto_execute = false},
     {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
+    {name = "meng hub", url = "https://raw.githubusercontent.com/GrexXMeng/Mengs/refs/heads/main/library", auto_execute = false},
+    {name = "foxname hub", url = "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FN_GAG2_skibidi.lua", auto_execute = false},
 }
 
 SubTab10:AddLabel("• grow a garden 2 hub")

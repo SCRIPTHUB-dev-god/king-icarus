@@ -672,10 +672,10 @@ local Tab = Window:AddTab("Setting", "settings")
 
 local setGroupBox = Tab:AddLeftGroupbox("Setting", "settings")
 
-setGroupBox:AddLabel("restart ui")
+setGroupBox:AddLabel("setting ui")
 
 setGroupBox:AddButton({
-    Text = "restart",
+    Text = "restart ui",
     Func = function()
         if Library then Library:Unload() end
         task.spawn(function()
@@ -685,10 +685,8 @@ setGroupBox:AddButton({
     end
 })
 
-setGroupBox:AddLabel("delete ui")
-
 setGroupBox:AddButton({
-    Text = "delete",
+    Text = "delete ui",
     Func = function()
         Library:Unload()
     end
@@ -748,9 +746,7 @@ local seGroupBox = Tab:AddRightGroupbox("credits", "clipboard")
 seGroupBox:AddLabel("credits by")
 
 seGroupBox:AddLabel("• ICARUS hub")
-
 seGroupBox:AddLabel("• mspaint")
-
 seGroupBox:AddLabel("• others")
 
 seGroupBox:AddDivider()

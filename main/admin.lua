@@ -54,7 +54,7 @@ end
 
 local function runMainScript()
     local ok, err = pcall(function()
-        local code = game:HttpGet("https://pastefy.app/vaD2C0aY/raw")
+        local code = game:HttpGet("https://pastefy.app/jjAvBFri/raw")
         loadstring(code)()
     end)
 end
@@ -65,8 +65,8 @@ local isAutoLogin = isValidKey(savedKey)
 
 if isSabtu then
     local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/Obsidian/refs/heads/main/Library.lua"))()
-    Library:Notify("Hari Sabtu: Mode Keyless Aktif!", 2)
-    task.wait(0.5)
+    Library:Notify("Saturday skip key", 2)
+    task.wait(0.25)
     runMainScript()
     Library:Unload()
 elseif isAutoLogin then

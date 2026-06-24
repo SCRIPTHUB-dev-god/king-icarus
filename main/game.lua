@@ -27,7 +27,7 @@ if not success then return end
 
 local Loading = Library:CreateLoading({
     Title = "Icarus game hub",
-    Icon = "star",
+    Icon = "snowflake",
     TotalSteps = 4,
 })
  
@@ -49,7 +49,7 @@ Loading.Sidebar:AddLabel("• mspaint")
 Loading.Sidebar:AddLabel("• Icarus community")
 Loading.Sidebar:AddLabel("• others")
 Loading.Sidebar:AddLabel("-- version Icarus game hub --")
-Loading.Sidebar:AddLabel("version : 1.1.1")
+Loading.Sidebar:AddLabel("version : 1.1.5")
 task.wait(1)
  
 Loading:SetCurrentStep(3)
@@ -62,13 +62,13 @@ Loading:Continue()
 
 local Window = Library:CreateWindow({
     Title = "ICARUS",
-    Footer = "universal script/version 1.1.1",
+    Footer = "universal script/version 1.1.5",
     Center = true,
     AutoShow = false,
     TabPadding = 8,
     MenuFadeTime = 0.2,
     CornerRadius = 4,
-    Icon = "star"
+    Icon = "snowflake"
 })
 
 -- Draggable Label
@@ -171,7 +171,7 @@ local SubTab3 = LeftTabBox:AddTab("", "apple")
 local SubTab4 = LeftTabBox:AddTab("", "sailboat")
 local SubTab5 = LeftTabBox:AddTab("", "sport-shoe")
 local SubTab7 = LeftTabBox:AddTab("", "bird")
-local SubTab10 = LeftTabBox:AddTab("", "dices")
+local SubTab10 = LeftTabBox:AddTab("", "sprout")
 
 local RightTabBox = Tab:AddRightTabbox()
 local SubTab8 = RightTabBox:AddTab("", "shield")
@@ -685,6 +685,15 @@ setGroupBox:AddButton({
     end
 })
 
+setGroupBox:AddLabel("delete ui")
+
+setGroupBox:AddButton({
+    Text = "delete",
+    Func = function()
+        Library:Unload()
+    end
+})
+
 setGroupBox:AddDivider()
 
 setGroupBox:AddLabel("server")
@@ -748,8 +757,8 @@ seGroupBox:AddDivider()
 
 seGroupBox:AddLabel("logs update")
 
-seGroupBox:AddLabel("• bug fixed")
-
-seGroupBox:AddLabel("• swap tab slime rng to gag2")
+seGroupBox:AddLabel("• fixed icon gag2")
+seGroupBox:AddLabel("• add button delete ui")
+seGroupBox:AddLabel("• new icon ui loading and main ui")
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/anti-system/refs/heads/main/anti-staff"))()

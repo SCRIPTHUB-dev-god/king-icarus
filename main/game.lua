@@ -25,41 +25,6 @@ end)
 
 if not success then return end
 
-local Loading = Library:CreateLoading({
-    Title = "Icarus game hub",
-    Icon = "snowflake",
-    TotalSteps = 4,
-})
- 
--- Loading...
-Loading:SetMessage("Initializing...")
-Loading:SetDescription("Waiting for game to load...")
-task.wait(1)
- 
-Loading:SetCurrentStep(1)
-Loading:SetDescription("Loading configuration...")
-task.wait(1)
- 
--- Show sidebar with information
-Loading:SetCurrentStep(2)
-Loading:ShowSidebarPage(true)
-Loading.Sidebar:AddLabel("wellcome to Icarus game hub")
-Loading.Sidebar:AddLabel("credit by")
-Loading.Sidebar:AddLabel("• mspaint")
-Loading.Sidebar:AddLabel("• Icarus community")
-Loading.Sidebar:AddLabel("• others")
-Loading.Sidebar:AddLabel("-- version Icarus game hub --")
-Loading.Sidebar:AddLabel("version : 1.1.5")
-task.wait(1)
- 
-Loading:SetCurrentStep(3)
-Loading:SetDescription("Ready to start!")
-task.wait(1)
- 
-Loading:SetCurrentStep(4)
-Library:Notify("Loading finish", 5)
-Loading:Continue()
-
 local Window = Library:CreateWindow({
     Title = "ICARUS",
     Footer = "universal script/version 1.1.5",
@@ -114,7 +79,11 @@ Window:AddDialog("EmptyDialogueIdx", {
     }
 })
 
-local Tab = Window:AddTab("support", "info")
+local Tab = Window:AddTab({
+    Name = "info",
+    Description = "discord and info game",
+    Icon = "info"
+})
 
 local infoGroupBox = Tab:AddLeftGroupbox("info", "info")
 
@@ -123,7 +92,7 @@ local Label = infoGroupBox:AddLabel("support my discord")
 infoGroupBox:AddButton({
     Text = "Copy Discord",
     Func = function()
-        local link = "https://discord.gg/mjhqEMRr"
+        local link = "https://discord.gg/dbE59H6grJ"
         
         if setclipboard then
             setclipboard(link)
@@ -163,8 +132,12 @@ gameid:AddButton({
     end
 })
 
-local Tab = Window:AddTab("Main", "joystick")
-local LeftTabBox = Tab:AddLeftTabbox()
+local Tab1 = Window:AddTab({
+    Name = "Main",
+    Description = "search script",
+    Icon = "joystick"
+})
+local LeftTabBox = Tab1:AddLeftTabbox("Left Tabbox")
 local SubTab1 = LeftTabBox:AddTab("", "star")
 local SubTab2 = LeftTabBox:AddTab("", "sprout")
 local SubTab3 = LeftTabBox:AddTab("", "apple")
@@ -173,7 +146,7 @@ local SubTab5 = LeftTabBox:AddTab("", "sport-shoe")
 local SubTab7 = LeftTabBox:AddTab("", "bird")
 local SubTab10 = LeftTabBox:AddTab("", "sprout")
 
-local RightTabBox = Tab:AddRightTabbox()
+local RightTabBox = Tab1:AddRightTabbox("Right Tabbox")
 local SubTab8 = RightTabBox:AddTab("", "shield")
 local SubTab9 = RightTabBox:AddTab("", "swords")
 
@@ -185,6 +158,86 @@ local list = {
     {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
 }
 
+local list1 = {
+    {name = "speed hub x ", url = "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", auto_execute = false},
+    {name = "wish hub x", url = "https://raw.githubusercontent.com/dy1zn4t/WisHubX/refs/heads/main/loader", auto_execute = false},
+    {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
+    {name = "lunor hub ", url = "https://lunor.dev/loader", auto_execute = false},
+    {name = "thunderz hub", url = "https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua", auto_execute = false},
+}
+
+local list2 = {
+    {
+        name = "blue x hub", 
+        url = [[_G.SaveConfig = true; loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-BlueX/BlueX-Hub/refs/heads/main/Main.lua"))()]], 
+        auto_execute = false
+    },
+    {
+        name = "kaitun Blue X Hub", 
+        url = [[
+            getgenv().Config = {
+                ["Setting"] = {
+                    ["UiCheckItem"] = false,
+                    ["White Screen"] = false
+                },       
+                ["Quest"] = {
+                    ["Race V2-V3"] = true,
+                    ["Haki Rainbow"] = true
+                },
+                ["Webhook"] = {
+                    ["Enable"] = false,
+                    ["UrlWebhook"] = ""
+                }
+            }
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-BlueX/BlueX-Hub/refs/heads/main/KaitunBloxFruits.lua"))()
+        ]], 
+        auto_execute = false
+    },
+    {name = "gravity hub", url = "https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua", auto_execute = false},
+    {name = "Meo Lazy hub", url = "https://raw.githubusercontent.com/MeoLazy/Script/refs/heads/main/V1.lua", auto_execute = false},
+    {name = "turbo lite hub", url = "https://raw.githubusercontent.com/TurboLite/Script/refs/heads/main/MainV2.lua", auto_execute = false},
+}
+
+local list4 = {
+    {name = "Yin Yang Hub", url = "https://raw.githubusercontent.com/yesimsoul/Yin-Yang-Hub/refs/heads/main/evade", auto_execute = false},
+    {name = "event evade", url = "https://raw.githubusercontent.com/gumanba/Scripts/main/EvadeEvent", auto_execute = false},
+    {name = "kaitun evade", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/kaitun.lua", auto_execute = false},
+}
+
+local list3 = {
+    {name = "luau.pro", url = "https://raw.githubusercontent.com/TheRealAsu/Luau.pro-utils/main/Loader", auto_execute = false},
+    {name = "kaitun babft", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/kaitun.lua", auto_execute = false},
+}
+
+local list6 = {
+    {name = "atlas hub", url = "https://rawscripts.net/raw/Bee-Swarm-Simulator-Atlas-49277", auto_execute = false},
+    {name = "ronix hub", url = "https://api.luarmor.net/files/v3/loaders/fda9babd071d6b536a745774b6bc681c.lua", auto_execute = false},
+}
+
+local list7 = {
+    {name = "infinite yield", url = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", auto_execute = false},
+    {name = "Nameless Admin", url = "https://raw.githubusercontent.com/ltseverydayyou/Nameless-Admin/main/Source.lua", auto_execute = false},
+    {name = "Icarus admin", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/admin.lua", auto_execute = false},
+    {name = "vape v4", url = "https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/NewMainScript.lua", auto_execute = false},
+    {name = "dex explorer", url = "https://rawscripts.net/raw/Universal-Script-Dex-Explorer-DPP-73687", auto_execute = false},
+    {name = "AK ADMIN", url = "https://absent.wtf/AKADMIN.lua", auto_execute = false},
+}
+
+local list8 = {
+    {name = "aimbot pro", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/aimbot/refs/heads/main/aimbot.lua", auto_execute = false},
+    {name = "aimbot mobile", url = "https://raw.githubusercontent.com/DanielHubll/DanielHubll/refs/heads/main/Aimbot%20Mobile", auto_execute = false},
+}
+
+local list9 = {
+    {name = "chiyo hub", url = "https://raw.githubusercontent.com/kaisenlmao/loader/refs/heads/main/chiyo.lua", auto_execute = false},
+    {name = "Speed Hub X", url = "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", auto_execute = false},
+    {name = "alchemy hub", url = "https://raw.githubusercontent.com/x2neptunereal/Alchemy/main/gateway.luau", auto_execute = false},
+    {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
+    {name = "air flow hub", url = "https://airflowscript.com/loader", auto_execute = false},
+    {name = "foxname hub", url = "https://foxname.top/loader", auto_execute = false},
+}
+
+-- bests hub
 SubTab1:AddLabel("• bests hub")
 
 SubTab1:AddDivider()
@@ -230,14 +283,7 @@ for i, item in ipairs(list) do
     SubTab1:AddDivider()
 end
 
-local list1 = {
-    {name = "speed hub x ", url = "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", auto_execute = false},
-    {name = "wish hub x", url = "https://raw.githubusercontent.com/dy1zn4t/WisHubX/refs/heads/main/loader", auto_execute = false},
-    {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
-    {name = "lunor hub ", url = "https://lunor.dev/loader", auto_execute = false},
-    {name = "thunderz hub", url = "https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/GaG/Main.lua", auto_execute = false},
-}
-
+-- grow a garden
 SubTab2:AddLabel("• grow a garden hub")
 
 SubTab2:AddDivider()
@@ -283,37 +329,7 @@ for i, item in ipairs(list1) do
     SubTab2:AddDivider()
 end
 
-local list2 = {
-    {
-        name = "blue x hub", 
-        url = [[_G.SaveConfig = true; loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-BlueX/BlueX-Hub/refs/heads/main/Main.lua"))()]], 
-        auto_execute = false
-    },
-    {
-        name = "kaitun Blue X Hub", 
-        url = [[
-            getgenv().Config = {
-                ["Setting"] = {
-                    ["UiCheckItem"] = false,
-                    ["White Screen"] = false
-                },       
-                ["Quest"] = {
-                    ["Race V2-V3"] = true,
-                    ["Haki Rainbow"] = true
-                },
-                ["Webhook"] = {
-                    ["Enable"] = false,
-                    ["UrlWebhook"] = ""
-                }
-            }
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Dev-BlueX/BlueX-Hub/refs/heads/main/KaitunBloxFruits.lua"))()
-        ]], 
-        auto_execute = false
-    },
-    {name = "gravity hub", url = "https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua", auto_execute = false},
-    {name = "minhz hub", url = "https://minhz-hub.vercel.app/main_ui", auto_execute = false},
-}
-
+-- Blox Fruit hub
 SubTab3:AddLabel("• Blox Fruit hub")
 
 SubTab3:AddDivider()
@@ -359,11 +375,7 @@ for i, item in ipairs(list2) do
     SubTab3:AddDivider()
 end
 
-local list3 = {
-    {name = "luau.pro", url = "https://raw.githubusercontent.com/TheRealAsu/Luau.pro-utils/main/Loader", auto_execute = false},
-    {name = "kaitun babft", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/kaitun.lua", auto_execute = false},
-}
-
+-- babft hub
 SubTab4:AddLabel("• build a boat hub")
 
 SubTab4:AddDivider()
@@ -409,12 +421,7 @@ for i, item in ipairs(list3) do
     SubTab4:AddDivider()
 end
 
-local list4 = {
-    {name = "Yin Yang Hub", url = "https://raw.githubusercontent.com/yesimsoul/Yin-Yang-Hub/refs/heads/main/evade", auto_execute = false},
-    {name = "event evade", url = "https://raw.githubusercontent.com/gumanba/Scripts/main/EvadeEvent", auto_execute = false},
-    {name = "kaitun evade", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/kaitun.lua", auto_execute = false},
-}
-
+-- evade hub
 SubTab5:AddLabel("• evade hub")
 
 SubTab5:AddDivider()
@@ -460,11 +467,7 @@ for i, item in ipairs(list4) do
     SubTab5:AddDivider()
 end
 
-local list6 = {
-    {name = "atlas hub", url = "https://rawscripts.net/raw/Bee-Swarm-Simulator-Atlas-49277", auto_execute = false},
-    {name = "ronix hub", url = "https://api.luarmor.net/files/v3/loaders/fda9babd071d6b536a745774b6bc681c.lua", auto_execute = false},
-}
-
+-- bss hub
 SubTab7:AddLabel("• Bee Swarm Simulator hub")
 
 SubTab7:AddDivider()
@@ -510,15 +513,7 @@ for i, item in ipairs(list6) do
     SubTab7:AddDivider()
 end
 
-local list7 = {
-    {name = "infinite yield", url = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source", auto_execute = false},
-    {name = "Nameless Admin", url = "https://raw.githubusercontent.com/ltseverydayyou/Nameless-Admin/main/Source.lua", auto_execute = false},
-    {name = "Icarus admin", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/admin.lua", auto_execute = false},
-    {name = "vape v4", url = "https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/NewMainScript.lua", auto_execute = false},
-    {name = "dex explorer", url = "https://rawscripts.net/raw/Universal-Script-Dex-Explorer-DPP-73687", auto_execute = false},
-    {name = "AK ADMIN", url = "https://absent.wtf/AKADMIN.lua", auto_execute = false},
-}
-
+-- admin panel
 SubTab8:AddLabel("• admin Script")
 
 SubTab8:AddDivider()
@@ -564,11 +559,7 @@ for i, item in ipairs(list7) do
     SubTab8:AddDivider()
 end
 
-local list8 = {
-    {name = "aimbot pro", url = "https://raw.githubusercontent.com/SCRIPTHUB-dev-god/aimbot/refs/heads/main/main", auto_execute = false},
-    {name = "aimbot mobile", url = "https://raw.githubusercontent.com/DanielHubll/DanielHubll/refs/heads/main/Aimbot%20Mobile", auto_execute = false},
-}
-
+-- aimbot
 SubTab9:AddLabel("• aimbot Script")
 
 SubTab9:AddDivider()
@@ -614,15 +605,7 @@ for i, item in ipairs(list8) do
     SubTab9:AddDivider()
 end
 
-local list9 = {
-    {name = "chiyo hub", url = "https://raw.githubusercontent.com/kaisenlmao/loader/refs/heads/main/chiyo.lua", auto_execute = false},
-    {name = "Speed Hub X", url = "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", auto_execute = false},
-    {name = "alchemy hub", url = "https://raw.githubusercontent.com/x2neptunereal/Alchemy/main/gateway.luau", auto_execute = false},
-    {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
-    {name = "meng hub", url = "https://raw.githubusercontent.com/GrexXMeng/Mengs/refs/heads/main/library", auto_execute = false},
-    {name = "foxname hub", url = "https://foxname.top/loader", auto_execute = false},
-}
-
+-- grow a garden 2
 SubTab10:AddLabel("• grow a garden 2 hub")
 
 SubTab10:AddDivider()
@@ -668,9 +651,13 @@ for i, item in ipairs(list9) do
     SubTab10:AddDivider()
 end
 
-local Tab = Window:AddTab("Setting", "settings")
+local Tab2 = Window:AddTab({
+    Name = "Setting",
+    Description = "Setting ui",
+    Icon = "settings"
+})
 
-local setGroupBox = Tab:AddLeftGroupbox("Setting", "settings")
+local setGroupBox = Tab2:AddLeftGroupbox("Setting", "settings")
 
 setGroupBox:AddLabel("setting ui")
 
@@ -741,7 +728,7 @@ setGroupBox:AddButton({
     Func = doRejoin
 })
 
-local seGroupBox = Tab:AddRightGroupbox("credits", "clipboard")
+local seGroupBox = Tab2:AddRightGroupbox("credits", "clipboard")
 
 seGroupBox:AddLabel("credits by")
 
@@ -753,8 +740,5 @@ seGroupBox:AddDivider()
 
 seGroupBox:AddLabel("logs update")
 
-seGroupBox:AddLabel("• fixed icon gag2")
-seGroupBox:AddLabel("• add button delete ui")
-seGroupBox:AddLabel("• new icon ui loading and main ui")
-
-loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/anti-system/refs/heads/main/anti-staff"))()
+seGroupBox:AddLabel("• new 2 script Blox Fruit")
+seGroupBox:AddLabel("• remove code in Script")

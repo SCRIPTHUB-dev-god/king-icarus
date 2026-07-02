@@ -4,6 +4,7 @@ local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
 local HttpService = game:GetService("HttpService")
 local VirtualUser = game:GetService("VirtualUser")
+local TextService = game:GetService("TextService")
 
 local player = Players.LocalPlayer
 local userId = player.UserId
@@ -19,7 +20,7 @@ gui.Parent = game:GetService("RunService"):IsStudio() and player:WaitForChild("P
 
 local topbarBtn = Instance.new("ImageButton")
 topbarBtn.Size = UDim2.new(0, 42, 0, 42)
-topbarBtn.Position = UDim2.new(1, -60, 0, 45)
+topbarBtn.Position = UDim2.new(1, -50, 0, 20)
 topbarBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 topbarBtn.BorderSizePixel = 0
 topbarBtn.Parent = gui
@@ -37,13 +38,13 @@ local terminalIcon = Instance.new("ImageLabel")
 terminalIcon.Size = UDim2.new(0, 24, 0, 24)
 terminalIcon.Position = UDim2.new(0.5, -12, 0.5, -12)
 terminalIcon.BackgroundTransparency = 1
-terminalIcon.Image = "rbxassetid://6031243341"
+terminalIcon.Image = "rbxassetid://10734982144"
 terminalIcon.ImageColor3 = Color3.fromRGB(0, 229, 255)
 terminalIcon.Parent = topbarBtn
 
 local mainGui = Instance.new("Frame")
 mainGui.Size = UDim2.new(0, 380, 0, 260)
-mainGui.Position = UDim2.new(0, -400, 0.5, -130)
+mainGui.Position = UDim2.new(0, -700, 0.5, -100)
 mainGui.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
 mainGui.BorderSizePixel = 0
 mainGui.Parent = gui
@@ -81,7 +82,7 @@ headerHide.BorderSizePixel = 0
 headerHide.Parent = header
 
 local brandName = Instance.new("TextLabel")
-brandName.Size = UDim2.new(0, 120, 1, 0)
+brandName.Size = UDim2.new(0, 160, 1, 0)
 brandName.Position = UDim2.new(0, 12, 0, 0)
 brandName.BackgroundTransparency = 1
 brandName.Text = "ICARUS Executor Script"
@@ -108,10 +109,10 @@ logoStroke.Thickness = 1
 logoStroke.Parent = playerLogo
 
 local playerName = Instance.new("TextLabel")
-playerName.Size = UDim2.new(0, 100, 1, 0)
-playerName.Position = UDim2.new(1, -145, 0, 0)
+playerName.Size = UDim2.new(0, 120, 1, 0)
+playerName.Position = UDim2.new(1, -165, 0, 0)
 playerName.BackgroundTransparency = 1
-playerName.Text = player.Name
+playerName.Text = player.DisplayName
 playerName.TextColor3 = Color3.fromRGB(255, 255, 255)
 playerName.Font = Enum.Font.GothamSemibold
 playerName.TextSize = 11
@@ -119,14 +120,15 @@ playerName.TextXAlignment = Enum.TextXAlignment.Right
 playerName.Parent = header
 
 local categoryContainer = Instance.new("Frame")
-categoryContainer.Size = UDim2.new(1, -24, 0, 28)
-categoryContainer.Position = UDim2.new(0, 12, 0, 45)
+categoryContainer.Size = UDim2.new(0, 160, 0, 28)
+categoryContainer.Position = UDim2.new(1, -172, 0, 45)
 categoryContainer.BackgroundTransparency = 1
 categoryContainer.Parent = mainGui
 
 local categoryLayout = Instance.new("UIListLayout")
 categoryLayout.FillDirection = Enum.FillDirection.Horizontal
 categoryLayout.SortOrder = Enum.SortOrder.LayoutOrder
+categoryLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 categoryLayout.Padding = UDim.new(0, 6)
 categoryLayout.Parent = categoryContainer
 
@@ -162,10 +164,13 @@ editorPage.Position = UDim2.new(0, 0, 0, 80)
 editorPage.BackgroundTransparency = 1
 editorPage.Parent = mainGui
 
-local settingPage = Instance.new("Frame")
+local settingPage = Instance.new("ScrollingFrame")
 settingPage.Size = UDim2.new(1, -24, 1, -90)
 settingPage.Position = UDim2.new(0, 12, 0, 80)
 settingPage.BackgroundTransparency = 1
+settingPage.ScrollBarThickness = 2
+settingPage.ScrollBarImageColor3 = Color3.fromRGB(0, 229, 255)
+settingPage.CanvasSize = UDim2.new(0, 0, 0, 0)
 settingPage.Visible = false
 settingPage.Parent = mainGui
 
@@ -175,8 +180,8 @@ settingLayout.Padding = UDim.new(0, 8)
 settingLayout.Parent = settingPage
 
 local tabContainer = Instance.new("ScrollingFrame")
-tabContainer.Size = UDim2.new(1, -45, 0, 26)
-tabContainer.Position = UDim2.new(0, 12, 0, 0)
+tabContainer.Size = UDim2.new(1, -210, 0, 26)
+tabContainer.Position = UDim2.new(0, 12, 0, -35)
 tabContainer.BackgroundTransparency = 1
 tabContainer.ScrollBarThickness = 0
 tabContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -190,7 +195,7 @@ tabLayout.Parent = tabContainer
 
 local addTabBtn = Instance.new("TextButton")
 addTabBtn.Size = UDim2.new(0, 26, 0, 26)
-addTabBtn.Position = UDim2.new(1, -38, 0, 0)
+addTabBtn.Position = UDim2.new(1, -202, 0, -35)
 addTabBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 addTabBtn.Text = "+"
 addTabBtn.TextColor3 = Color3.fromRGB(0, 229, 255)
@@ -208,8 +213,8 @@ addTabStroke.Thickness = 1
 addTabStroke.Parent = addTabBtn
 
 local editorContainer = Instance.new("Frame")
-editorContainer.Size = UDim2.new(1, -24, 1, -75)
-editorContainer.Position = UDim2.new(0, 12, 0, 34)
+editorContainer.Size = UDim2.new(1, -24, 1, -45)
+editorContainer.Position = UDim2.new(0, 12, 0, 5)
 editorContainer.BackgroundTransparency = 1
 editorContainer.Parent = editorPage
 
@@ -227,7 +232,7 @@ btnLayout.Parent = buttonsContainer
 
 local saveGui = Instance.new("Frame")
 saveGui.Size = UDim2.new(0, 180, 0, 260)
-saveGui.Position = UDim2.new(1, 40, 0.5, -130)
+saveGui.Position = UDim2.new(1, 40, 0.5, -100)
 saveGui.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
 saveGui.BorderSizePixel = 0
 saveGui.Parent = gui
@@ -393,11 +398,95 @@ local btnClear = createBottomButton("Clear", 48, 3)
 local btnExecute = createBottomButton("Execute", 56, 4)
 local btnSave = createBottomButton("Save", 48, 5)
 
-btnExecute.TextColor3 = Color3.fromRGB(0, 229, 255)
-btnExecute.UIStroke.Color = Color3.fromRGB(0, 150, 170)
+local currentTheme = "Neon" 
 
-btnSave.TextColor3 = Color3.fromRGB(0, 229, 255)
-btnSave.UIStroke.Color = Color3.fromRGB(0, 150, 170)
+local function applyTheme(themeName)
+    currentTheme = themeName
+    if themeName == "Neon" then
+        mainStroke.Color = Color3.fromRGB(0, 229, 255)
+        saveStroke.Color = Color3.fromRGB(0, 229, 255)
+        topbarStroke.Color = Color3.fromRGB(0, 229, 255)
+        terminalIcon.ImageColor3 = Color3.fromRGB(0, 229, 255)
+        brandName.TextColor3 = Color3.fromRGB(0, 229, 255)
+        logoStroke.Color = Color3.fromRGB(0, 229, 255)
+        addTabBtn.TextColor3 = Color3.fromRGB(0, 229, 255)
+        btnExecute.TextColor3 = Color3.fromRGB(0, 229, 255)
+        btnExecute.UIStroke.Color = Color3.fromRGB(0, 150, 170)
+        btnSave.TextColor3 = Color3.fromRGB(0, 229, 255)
+        btnSave.UIStroke.Color = Color3.fromRGB(0, 150, 170)
+        mainGlow.Color = Color3.fromRGB(0, 229, 255)
+        saveGlow.Color = Color3.fromRGB(0, 229, 255)
+        mainGlow.Enabled = true
+        saveGlow.Enabled = true
+        dialogStroke.Color = Color3.fromRGB(0, 229, 255)
+    elseif themeName == "Dark" then
+        mainStroke.Color = Color3.fromRGB(55, 55, 60)
+        saveStroke.Color = Color3.fromRGB(55, 55, 60)
+        topbarStroke.Color = Color3.fromRGB(55, 55, 60)
+        terminalIcon.ImageColor3 = Color3.fromRGB(200, 200, 200)
+        brandName.TextColor3 = Color3.fromRGB(230, 230, 235)
+        logoStroke.Color = Color3.fromRGB(55, 55, 60)
+        addTabBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+        btnExecute.TextColor3 = Color3.fromRGB(200, 200, 200)
+        btnExecute.UIStroke.Color = Color3.fromRGB(55, 55, 60)
+        btnSave.TextColor3 = Color3.fromRGB(200, 200, 200)
+        btnSave.UIStroke.Color = Color3.fromRGB(55, 55, 60)
+        mainGlow.Enabled = false
+        saveGlow.Enabled = false
+        dialogStroke.Color = Color3.fromRGB(55, 55, 60)
+    elseif themeName == "Golden" then
+        mainStroke.Color = Color3.fromRGB(255, 196, 0)
+        saveStroke.Color = Color3.fromRGB(255, 196, 0)
+        topbarStroke.Color = Color3.fromRGB(255, 196, 0)
+        terminalIcon.ImageColor3 = Color3.fromRGB(255, 196, 0)
+        brandName.TextColor3 = Color3.fromRGB(255, 196, 0)
+        logoStroke.Color = Color3.fromRGB(255, 196, 0)
+        addTabBtn.TextColor3 = Color3.fromRGB(255, 196, 0)
+        btnExecute.TextColor3 = Color3.fromRGB(255, 196, 0)
+        btnExecute.UIStroke.Color = Color3.fromRGB(180, 140, 0)
+        btnSave.TextColor3 = Color3.fromRGB(255, 196, 0)
+        btnSave.UIStroke.Color = Color3.fromRGB(180, 140, 0)
+        mainGlow.Color = Color3.fromRGB(255, 196, 0)
+        saveGlow.Color = Color3.fromRGB(255, 196, 0)
+        mainGlow.Enabled = true
+        saveGlow.Enabled = true
+        dialogStroke.Color = Color3.fromRGB(255, 196, 0)
+    end
+end
+
+local function updateUISize()
+    local camera = workspace.CurrentCamera
+    if camera then
+        local screenSize = camera.ViewportSize
+        if screenSize.X >= 1024 then
+            mainGui.Size = UDim2.new(0, 550, 0, 380)
+            saveGui.Size = UDim2.new(0, 200, 0, 380)
+            categoryContainer.Position = UDim2.new(1, -172, 0, 45)
+            tabContainer.Size = UDim2.new(1, -210, 0, 26)
+            addTabBtn.Position = UDim2.new(1, -202, 0, -35)
+            
+            btnPaste.Size = UDim2.new(0, 70, 1, 0)
+            btnExecClip.Size = UDim2.new(0, 90, 1, 0)
+            btnClear.Size = UDim2.new(0, 70, 1, 0)
+            btnExecute.Size = UDim2.new(0, 85, 1, 0)
+            btnSave.Size = UDim2.new(0, 70, 1, 0)
+        else
+            mainGui.Size = UDim2.new(0, 380, 0, 260)
+            saveGui.Size = UDim2.new(0, 180, 0, 260)
+            categoryContainer.Position = UDim2.new(1, -172, 0, 45)
+            tabContainer.Size = UDim2.new(1, -210, 0, 26)
+            addTabBtn.Position = UDim2.new(1, -202, 0, -35)
+            
+            btnPaste.Size = UDim2.new(0, 48, 1, 0)
+            btnExecClip.Size = UDim2.new(0, 64, 1, 0)
+            btnClear.Size = UDim2.new(0, 48, 1, 0)
+            btnExecute.Size = UDim2.new(0, 56, 1, 0)
+            btnSave.Size = UDim2.new(0, 48, 1, 0)
+        end
+    end
+end
+updateUISize()
+workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(updateUISize)
 
 local function makeDraggable(element, handle)
     local dragging, dragInput, dragStart, startPos
@@ -426,13 +515,13 @@ local function makeDraggable(element, handle)
     end)
 end
 
-makeDraggable(topbarBtn, topbarBtn)
+makeDraggable(mainGui, header)
 
 local isOpen = false
 topbarBtn.MouseButton1Click:Connect(function()
     isOpen = not isOpen
-    local mainTarget = isOpen and UDim2.new(0, 10, 0.5, -130) or UDim2.new(0, -400, 0.5, -130)
-    local saveTarget = isOpen and UDim2.new(1, -190, 0.5, -130) or UDim2.new(1, 40, 0.5, -130)
+    local mainTarget = isOpen and UDim2.new(0, 10, 0.5, -(mainGui.AbsoluteSize.Y/2) + 30) or UDim2.new(0, -600, 0.5, -(mainGui.AbsoluteSize.Y/2) + 30)
+    local saveTarget = isOpen and UDim2.new(1, -(saveGui.AbsoluteSize.X + 10), 0.5, -(saveGui.AbsoluteSize.Y/2) + 30) or UDim2.new(1, 40, 0.5, -(saveGui.AbsoluteSize.Y/2) + 30)
     
     TweenService:Create(mainGui, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = mainTarget}):Play()
     TweenService:Create(saveGui, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = saveTarget}):Play()
@@ -441,24 +530,16 @@ end)
 local function switchCategory(category)
     if category == "Editor" then
         catEditorBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        catEditorBtn.UIStroke.Color = Color3.fromRGB(0, 229, 255)
-        catEditorBtn.TextColor3 = Color3.fromRGB(0, 229, 255)
-        
+        catEditorBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         catSettingBtn.BackgroundColor3 = Color3.fromRGB(16, 16, 20)
-        catSettingBtn.UIStroke.Color = Color3.fromRGB(30, 30, 35)
         catSettingBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
-        
         editorPage.Visible = true
         settingPage.Visible = false
     elseif category == "Setting" then
         catSettingBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        catSettingBtn.UIStroke.Color = Color3.fromRGB(0, 229, 255)
-        catSettingBtn.TextColor3 = Color3.fromRGB(0, 229, 255)
-        
+        catSettingBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         catEditorBtn.BackgroundColor3 = Color3.fromRGB(16, 16, 20)
-        catEditorBtn.UIStroke.Color = Color3.fromRGB(30, 30, 35)
         catEditorBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
-        
         settingPage.Visible = true
         editorPage.Visible = false
     end
@@ -468,9 +549,11 @@ catEditorBtn.MouseButton1Click:Connect(function() switchCategory("Editor") end)
 catSettingBtn.MouseButton1Click:Connect(function() switchCategory("Setting") end)
 switchCategory("Editor")
 
-local isNeonTheme = true
 local antiAfkEnabled = false
 local isTransparentGUI = false
+local globalAutoExecEnabled = true 
+local transparencyValue = 0.27     
+local syntaxHighlightEnabled = true
 local lastInteractionTime = os.time()
 
 local function createSettingToggle(text)
@@ -482,7 +565,7 @@ local function createSettingToggle(text)
     label.Size = UDim2.new(1, -60, 1, 0)
     label.BackgroundTransparency = 1
     label.Text = text
-    label.TextColor3 = Color3.fromRGB(230, 230, 230)
+    label.TextColor3 = Color3.fromRGB(230, 230, 235)
     label.Font = Enum.Font.GothamSemibold
     label.TextSize = 12
     label.TextXAlignment = Enum.TextXAlignment.Left
@@ -503,66 +586,232 @@ local function createSettingToggle(text)
     
     toggle.Parent = frame
     frame.Parent = settingPage
+    
+    settingPage.CanvasSize = UDim2.new(0, 0, 0, settingLayout.AbsoluteContentSize.Y + 20)
     return toggle
 end
 
-local toggleNeon = createSettingToggle("Color GUI Neon")
-local toggleNonNeon = createSettingToggle("Color GUI Non Neon")
-local toggleTransparent = createSettingToggle("Transparent GUI")
-local toggleAntiAfk = createSettingToggle("Anti AFK System")
+local function createSettingInput(text, placeholder, defaultVal)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, 0, 0, 32)
+    frame.BackgroundTransparency = 1
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -70, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(230, 230, 235)
+    label.Font = Enum.Font.GothamSemibold
+    label.TextSize = 12
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+    
+    local txtBox = Instance.new("TextBox")
+    txtBox.Size = UDim2.new(0, 60, 0, 22)
+    txtBox.Position = UDim2.new(1, -60, 0.5, -11)
+    txtBox.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    txtBox.Text = tostring(defaultVal or "")
+    txtBox.PlaceholderText = placeholder
+    txtBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    txtBox.Font = Enum.Font.GothamBold
+    txtBox.TextSize = 11
+    txtBox.ClearTextOnFocus = false
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 4)
+    corner.Parent = txtBox
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(45, 45, 50)
+    stroke.Thickness = 1
+    stroke.Parent = txtBox
+    
+    txtBox.Parent = frame
+    frame.Parent = settingPage
+    
+    settingPage.CanvasSize = UDim2.new(0, 0, 0, settingLayout.AbsoluteContentSize.Y + 20)
+    return txtBox
+end
 
-local function updateThemeUI()
-    if isNeonTheme then
-        toggleNeon.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
-        toggleNeon.Text = "ON"
-        toggleNeon.TextColor3 = Color3.fromRGB(255, 255, 255)
-        
-        toggleNonNeon.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-        toggleNonNeon.Text = "OFF"
-        toggleNonNeon.TextColor3 = Color3.fromRGB(255, 255, 255)
-        
-        mainStroke.Color = Color3.fromRGB(0, 229, 255)
-        saveStroke.Color = Color3.fromRGB(0, 229, 255)
-        mainGlow.Enabled = true
-        saveGlow.Enabled = true
-    else
-        toggleNonNeon.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
-        toggleNonNeon.Text = "ON"
-        toggleNonNeon.TextColor3 = Color3.fromRGB(170, 218, 138)
-        
-        toggleNeon.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-        toggleNeon.Text = "OFF"
-        toggleNeon.TextColor3 = Color3.fromRGB(255, 255, 255)
-        
-        mainStroke.Color = Color3.fromRGB(55, 55, 60)
-        saveStroke.Color = Color3.fromRGB(55, 55, 60)
-        mainGlow.Enabled = false
-        saveGlow.Enabled = false
+local function createSettingDropdown(text, options, callback)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, 0, 0, 32)
+    frame.BackgroundTransparency = 1
+    frame.ClipsDescendants = false
+    frame.Parent = settingPage
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0, 120, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(230, 230, 235)
+    label.Font = Enum.Font.GothamSemibold
+    label.TextSize = 12
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+
+    local mainButton = Instance.new("TextButton")
+    mainButton.Size = UDim2.new(1, -130, 0, 24)
+    mainButton.Position = UDim2.new(0, 130, 0.5, -12)
+    mainButton.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    mainButton.Text = options[1] or "Select..."
+    mainButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    mainButton.Font = Enum.Font.GothamSemibold
+    mainButton.TextSize = 11
+    mainButton.ZIndex = 5
+    mainButton.Parent = frame
+
+    local mainCorner = Instance.new("UICorner")
+    mainCorner.CornerRadius = UDim.new(0, 4)
+    mainCorner.Parent = mainButton
+
+    local mainStroke = Instance.new("UIStroke")
+    mainStroke.Color = Color3.fromRGB(45, 45, 50)
+    mainStroke.Thickness = 1
+    mainStroke.Parent = mainButton
+
+    local listFrame = Instance.new("Frame")
+    listFrame.Size = UDim2.new(1, 0, 0, 0)
+    listFrame.Position = UDim2.new(0, 0, 1, 2)
+    listFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+    listFrame.Visible = false
+    listFrame.ZIndex = 6
+    listFrame.Parent = mainButton
+
+    local listCorner = Instance.new("UICorner")
+    listCorner.CornerRadius = UDim.new(0, 4)
+    listCorner.Parent = listFrame
+
+    local listStroke = Instance.new("UIStroke")
+    listStroke.Color = Color3.fromRGB(45, 45, 50)
+    listStroke.Thickness = 1
+    listStroke.Parent = listFrame
+
+    local listLayout = Instance.new("UIListLayout")
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Parent = listFrame
+
+    local dropOpen = false
+    local function toggleDropdown()
+        dropOpen = not dropOpen
+        listFrame.Visible = dropOpen
+        if dropOpen then
+            listFrame.Size = UDim2.new(1, 0, 0, #options * 24)
+            frame.ZIndex = 10
+        else
+            listFrame.Size = UDim2.new(1, 0, 0, 0)
+            frame.ZIndex = 1
+        end
+    end
+
+    mainButton.MouseButton1Click:Connect(toggleDropdown)
+
+    for i, opt in ipairs(options) do
+        local optBtn = Instance.new("TextButton")
+        optBtn.Size = UDim2.new(1, 0, 0, 24)
+        optBtn.BackgroundTransparency = 1
+        optBtn.Text = opt
+        optBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+        optBtn.Font = Enum.Font.Gotham
+        optBtn.TextSize = 11
+        optBtn.ZIndex = 7
+        optBtn.Parent = listFrame
+
+        optBtn.MouseEnter:Connect(function()
+            optBtn.BackgroundTransparency = 0.9
+            optBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        end)
+        optBtn.MouseLeave:Connect(function()
+            optBtn.BackgroundTransparency = 1
+        end)
+
+        optBtn.MouseButton1Click:Connect(function()
+            mainButton.Text = opt
+            toggleDropdown()
+            callback(opt)
+        end)
+    end
+
+    settingPage.CanvasSize = UDim2.new(0, 0, 0, settingLayout.AbsoluteContentSize.Y + 20)
+    return mainButton
+end
+
+createSettingDropdown("Theme GUI", {"Neon", "Dark", "Golden"}, function(selected)
+    applyTheme(selected)
+end)
+
+local toggleTransparent = createSettingToggle("Transparent GUI")
+local inputTransparency = createSettingInput("Transparency Alpha", "0 - 1", transparencyValue)
+local toggleAutoExec = createSettingToggle("Global Auto Execute")
+local toggleAntiAfk = createSettingToggle("Anti AFK System")
+local toggleSyntax = createSettingToggle("Lua Syntax Highlight")
+
+toggleSyntax.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
+toggleSyntax.Text = "ON"
+
+toggleAutoExec.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
+toggleAutoExec.Text = "ON"
+
+local activeTabs = {}
+local activeEditors = {}
+local activeWrappers = {}
+local currentActiveTab = nil
+local savedScriptsData = {}
+
+local function triggerAllSyntaxUpdate()
+    for _, editor in pairs(activeEditors) do
+        if editor and editor:FindFirstChild("SyntaxLabel") then
+            editor.SyntaxLabel.Visible = syntaxHighlightEnabled
+            if syntaxHighlightEnabled then
+                editor.TextColor3 = Color3.fromRGB(230, 230, 235, 1) 
+                editor.Text = editor.Text
+            else
+                editor.TextColor3 = Color3.fromRGB(230, 230, 235) 
+                editor.SyntaxLabel.Text = ""
+            end
+        end
     end
 end
 
-toggleNeon.MouseButton1Click:Connect(function()
-    isNeonTheme = true
-    updateThemeUI()
+toggleSyntax.MouseButton1Click:Connect(function()
+    syntaxHighlightEnabled = not syntaxHighlightEnabled
+    toggleSyntax.BackgroundColor3 = syntaxHighlightEnabled and Color3.fromRGB(0, 150, 100) or Color3.fromRGB(40, 40, 45)
+    toggleSyntax.Text = syntaxHighlightEnabled and "ON" or "OFF"
+    triggerAllSyntaxUpdate()
 end)
 
-toggleNonNeon.MouseButton1Click:Connect(function()
-    isNeonTheme = false
-    updateThemeUI()
-end)
-
-toggleTransparent.MouseButton1Click:Connect(function()
-    isTransparentGUI = not isTransparentGUI
-    toggleTransparent.BackgroundColor3 = isTransparentGUI and Color3.fromRGB(0, 150, 100) or Color3.fromRGB(40, 40, 45)
-    toggleTransparent.Text = isTransparentGUI and "ON" or "OFF"
-    
-    local alpha = isTransparentGUI and 0.27 or 0
+local function updateTransparencyDisplay()
+    local alpha = isTransparentGUI and transparencyValue or 0
     mainGui.BackgroundTransparency = alpha
     saveGui.BackgroundTransparency = alpha
     header.BackgroundTransparency = alpha
     saveHeader.BackgroundTransparency = alpha
     headerHide.BackgroundTransparency = alpha
     saveHeaderHide.BackgroundTransparency = alpha
+end
+
+toggleTransparent.MouseButton1Click:Connect(function()
+    isTransparentGUI = not isTransparentGUI
+    toggleTransparent.BackgroundColor3 = isTransparentGUI and Color3.fromRGB(0, 150, 100) or Color3.fromRGB(40, 40, 45)
+    toggleTransparent.Text = isTransparentGUI and "ON" or "OFF"
+    updateTransparencyDisplay()
+end)
+
+inputTransparency.FocusLost:Connect(function()
+    local num = tonumber(inputTransparency.Text)
+    if num then
+        transparencyValue = math.clamp(num, 0, 1)
+        inputTransparency.Text = tostring(transparencyValue)
+        updateTransparencyDisplay()
+    else
+        inputTransparency.Text = tostring(transparencyValue)
+    end
+end)
+
+toggleAutoExec.MouseButton1Click:Connect(function()
+    globalAutoExecEnabled = not globalAutoExecEnabled
+    toggleAutoExec.BackgroundColor3 = globalAutoExecEnabled and Color3.fromRGB(0, 150, 100) or Color3.fromRGB(40, 40, 45)
+    toggleAutoExec.Text = globalAutoExecEnabled and "ON" or "OFF"
 end)
 
 toggleAntiAfk.MouseButton1Click:Connect(function()
@@ -594,13 +843,53 @@ task.spawn(function()
     end
 end)
 
-updateThemeUI()
+applyTheme("Neon")
 
-local activeTabs = {}
-local activeEditors = {}
-local activeWrappers = {}
-local currentActiveTab = nil
-local savedScriptsData = {}
+local lua_keywords = {
+    ["and"]=true, ["break"]=true, ["do"]=true, ["else"]=true, ["elseif"]=true, ["end"]=true,
+    ["false"]=true, ["for"]=true, ["function"]=true, ["if"]=true, ["in"]=true, ["local"]=true,
+    ["nil"]=true, ["not"]=true, ["or"]=true, ["repeat"]=true, ["return"]=true, ["then"]=true,
+    ["true"]=true, ["until"]=true, ["while"]=true, ["continue"]=true, ["self"]=true
+}
+
+local lua_globals = {
+    ["game"]=true, ["workspace"]=true, ["script"]=true, ["math"]=true, ["string"]=true,
+    ["table"]=true, ["task"]=true, ["wait"]=true, ["spawn"]=true, ["print"]=true,
+    ["warn"]=true, ["error"]=true, ["loadstring"]=true, ["pcall"]=true, ["xpcall"]=true,
+    ["shared"]=true, ["_G"]=true, ["getgenv"]=true, ["getclipboard"]=true, ["writefile"]=true
+}
+
+local function highlight(text)
+    text = text:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;")
+    
+    local lines = string.split(text, "\n")
+    for i, line in ipairs(lines) do
+        if line:find("%-%-") then
+            local code, comment = line:match("(.-)(%-%-.*)")
+            if comment then
+                lines[i] = code .. '<font color="rgb(100,120,100)">' .. comment .. '</font>'
+            end
+        end
+    end
+    text = table.concat(lines, "\n")
+
+    text = text:gsub('("[^"\n]*")', '<font color="rgb(255,190,100)">%1</font>')
+    text = text:gsub("('[^'\n]*')", '<font color="rgb(255,190,100)">%1</font>')
+
+    text = text:gsub("(%W)(%d+)(%W)", '%1<font color="rgb(255,120,120)">%2</font>%3')
+    text = text:gsub("^(%d+)(%W)", '<font color="rgb(255,120,120)">%1</font>%2')
+
+    text = text:gsub("([%a_][%w_]*)", function(word)
+        if lua_keywords[word] then
+            return '<font color="rgb(255,60,120)">' .. word .. '</font>'
+        elseif lua_globals[word] then
+            return '<font color="rgb(0,230,255)">' .. word .. '</font>'
+        end
+        return word
+    end)
+
+    return text
+end
 
 local function getNextTabIndex()
     local index = 1
@@ -637,11 +926,9 @@ local function switchTab(index)
     for idx, tab in pairs(activeTabs) do
         if idx == index then
             tab.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-            tab.UIStroke.Color = Color3.fromRGB(0, 229, 255)
-            tab.TextColor3 = Color3.fromRGB(0, 229, 255)
+            tab.TextColor3 = Color3.fromRGB(255, 255, 255)
         else
             tab.BackgroundColor3 = Color3.fromRGB(16, 16, 20)
-            tab.UIStroke.Color = Color3.fromRGB(30, 30, 35)
             tab.TextColor3 = Color3.fromRGB(200, 200, 200)
         end
     end
@@ -687,7 +974,6 @@ local function createTab(initialText)
     scrollFrame.ScrollBarThickness = 4
     scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 229, 255)
     scrollFrame.ClipsDescendants = true
-    scrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.XY
     scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     scrollFrame.Visible = false
     scrollFrame.Parent = editorContainer
@@ -702,11 +988,11 @@ local function createTab(initialText)
     scrollStroke.Parent = scrollFrame
 
     local editor = Instance.new("TextBox")
-    editor.Size = UDim2.new(1, -8, 1, -8)
-    editor.Position = UDim2.new(0, 4, 0, 4)
+    editor.Size = UDim2.new(1, 0, 1, 0)
+    editor.Position = UDim2.new(0, 0, 0, 0)
     editor.BackgroundTransparency = 1
     editor.Text = initialText or ""
-    editor.TextColor3 = Color3.fromRGB(230, 230, 235)
+    editor.TextColor3 = syntaxHighlightEnabled and Color3.fromRGB(230, 230, 235, 1) or Color3.fromRGB(230, 230, 235)
     editor.Font = Enum.Font.Code
     editor.TextSize = 11
     editor.TextXAlignment = Enum.TextXAlignment.Left
@@ -714,15 +1000,71 @@ local function createTab(initialText)
     editor.ClearTextOnFocus = false
     editor.MultiLine = true
     editor.TextWrapped = false
-    editor.AutomaticSize = Enum.AutomaticSize.XY
     editor.Parent = scrollFrame
 
+    local syntaxLabel = Instance.new("TextLabel")
+    syntaxLabel.Name = "SyntaxLabel"
+    syntaxLabel.Size = UDim2.new(1, 0, 1, 0)
+    syntaxLabel.Position = UDim2.new(0, 0, 0, 0)
+    syntaxLabel.BackgroundTransparency = 1
+    syntaxLabel.Text = ""
+    syntaxLabel.TextColor3 = Color3.fromRGB(230, 230, 235)
+    syntaxLabel.Font = Enum.Font.Code
+    syntaxLabel.TextSize = 11
+    syntaxLabel.TextXAlignment = Enum.TextXAlignment.Left
+    syntaxLabel.TextYAlignment = Enum.TextYAlignment.Top
+    syntaxLabel.RichText = true
+    syntaxLabel.Visible = syntaxHighlightEnabled
+    syntaxLabel.ZIndex = editor.ZIndex - 1 
+    syntaxLabel.Parent = editor
+
     local padding = Instance.new("UIPadding")
-    padding.PaddingTop = UDim.new(0, 4)
-    padding.PaddingBottom = UDim.new(0, 4)
-    padding.PaddingLeft = UDim.new(0, 4)
-    padding.PaddingRight = UDim.new(0, 4)
+    padding.PaddingTop = UDim.new(0, 6)
+    padding.PaddingBottom = UDim.new(0, 30)
+    padding.PaddingLeft = UDim.new(0, 8)
+    padding.PaddingRight = UDim.new(0, 50)
     padding.Parent = editor
+
+    local labelPadding = padding:Clone()
+    labelPadding.Parent = syntaxLabel
+
+    local function updateCanvasSize()
+        local lines = string.split(editor.Text, "\n")
+        local maxWidth = 0
+        
+        for _, line in ipairs(lines) do
+            local processedLine = line == "" and " " or line
+            local size = TextService:GetTextSize(processedLine, editor.TextSize, editor.Font, Vector2.new(20000, 20000))
+            if size.X > maxWidth then
+                maxWidth = size.X
+            end
+        end
+        
+        local textHeight = #lines * (editor.TextSize + 3)
+        local frameWidth = scrollFrame.AbsoluteSize.X
+        local frameHeight = scrollFrame.AbsoluteSize.Y
+
+        local finalWidth = math.max(maxWidth + 80, frameWidth)
+        local finalHeight = math.max(textHeight + 50, frameHeight)
+
+        editor.Size = UDim2.new(0, finalWidth, 0, finalHeight)
+        syntaxLabel.Size = UDim2.new(0, finalWidth, 0, finalHeight)
+        scrollFrame.CanvasSize = UDim2.new(0, finalWidth, 0, finalHeight)
+    end
+
+    editor:GetPropertyChangedSignal("Text"):Connect(function()
+        saveTabsState()
+        updateCanvasSize()
+        if syntaxHighlightEnabled then
+            editor.TextColor3 = Color3.fromRGB(230, 230, 235, 1) 
+            syntaxLabel.Text = highlight(editor.Text)
+        else
+            editor.TextColor3 = Color3.fromRGB(230, 230, 235)
+            syntaxLabel.Text = ""
+        end
+    end)
+    
+    scrollFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateCanvasSize)
 
     activeTabs[index] = tabBtn
     activeEditors[index] = editor
@@ -733,10 +1075,6 @@ local function createTab(initialText)
 
     tabBtn.MouseButton1Click:Connect(function()
         switchTab(index)
-    end)
-
-    editor:GetPropertyChangedSignal("Text"):Connect(function()
-        saveTabsState()
     end)
 
     closeBtn.MouseButton1Click:Connect(function()
@@ -766,6 +1104,12 @@ local function createTab(initialText)
     end)
 
     switchTab(index)
+    task.defer(function()
+        updateCanvasSize()
+        if syntaxHighlightEnabled then
+            syntaxLabel.Text = highlight(editor.Text)
+        end
+    end)
 end
 
 addTabBtn.MouseButton1Click:Connect(function()
@@ -919,6 +1263,7 @@ btnExecClip.MouseButton1Click:Connect(function()
     end
 end)
 
+btnClean = btnClear 
 btnClear.MouseButton1Click:Connect(function()
     if currentActiveTab and activeEditors[currentActiveTab] then
         activeEditors[currentActiveTab].Text = ""
@@ -926,15 +1271,15 @@ btnClear.MouseButton1Click:Connect(function()
 end)
 
 pcall(function()
-    if readfile and isfile and isfile("terminal_scripts_saves.json") then
-        savedScriptsData = HttpService:JSONDecode(readfile("terminal_scripts_saves.json"))
+    if readfile and isfile and isfile("ICARUS_scripts_saves.json") then
+        savedScriptsData = HttpService:JSONDecode(readfile("ICARUS_scripts_saves.json"))
     end
 end)
 
 renderSaveList()
 
 for name, data in pairs(savedScriptsData) do
-    if data.AutoExec then
+    if data.AutoExec and globalAutoExecEnabled then
         task.spawn(function()
             local func = loadstring(data.Source)
             if func then
@@ -946,8 +1291,8 @@ end
 
 local hasAutosave = false
 pcall(function()
-    if readfile and isfile and isfile("terminal_tabs_autosave.json") then
-        local state = HttpService:JSONDecode(readfile("terminal_tabs_autosave.json"))
+    if readfile and isfile and isfile("ICARUS_tabs_autosave.json") then
+        local state = HttpService:JSONDecode(readfile("ICARUS_tabs_autosave.json"))
         local indices = {}
         for k in pairs(state) do
             table.insert(indices, tonumber(k))

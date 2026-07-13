@@ -259,6 +259,7 @@ for i, item in ipairs(list) do
         Func = function()
             if item.url:sub(1, 4) == "http" then
                 loadstring(game:HttpGet(item.url))()
+                Library:Notify("Script is Execute", 4)
             else
                 loadstring(item.url)()
             end
@@ -305,6 +306,7 @@ for i, item in ipairs(list1) do
         Func = function()
             if item.url:sub(1, 4) == "http" then
                 loadstring(game:HttpGet(item.url))()
+                Library:Notify("Script is Execute", 4)
             else
                 loadstring(item.url)()
             end
@@ -351,6 +353,7 @@ for i, item in ipairs(list2) do
         Func = function()
             if item.url:sub(1, 4) == "http" then
                 loadstring(game:HttpGet(item.url))()
+                Library:Notify("Script is Execute", 4)
             else
                 loadstring(item.url)()
             end
@@ -397,6 +400,7 @@ for i, item in ipairs(list3) do
         Func = function()
             if item.url:sub(1, 4) == "http" then
                 loadstring(game:HttpGet(item.url))()
+                Library:Notify("Script is Execute", 4)
             else
                 loadstring(item.url)()
             end
@@ -443,6 +447,7 @@ for i, item in ipairs(list4) do
         Func = function()
             if item.url:sub(1, 4) == "http" then
                 loadstring(game:HttpGet(item.url))()
+                Library:Notify("Script is Execute", 4)
             else
                 loadstring(item.url)()
             end
@@ -489,6 +494,7 @@ for i, item in ipairs(list6) do
         Func = function()
             if item.url:sub(1, 4) == "http" then
                 loadstring(game:HttpGet(item.url))()
+                Library:Notify("Script is Execute", 4)
             else
                 loadstring(item.url)()
             end
@@ -535,6 +541,7 @@ for i, item in ipairs(list7) do
         Func = function()
             if item.url:sub(1, 4) == "http" then
                 loadstring(game:HttpGet(item.url))()
+                Library:Notify("Script is Execute", 4)
             else
                 loadstring(item.url)()
             end
@@ -581,6 +588,7 @@ for i, item in ipairs(list8) do
         Func = function()
             if item.url:sub(1, 4) == "http" then
                 loadstring(game:HttpGet(item.url))()
+                Library:Notify("Script is Execute", 4)
             else
                 loadstring(item.url)()
             end
@@ -627,6 +635,7 @@ for i, item in ipairs(list9) do
         Func = function()
             if item.url:sub(1, 4) == "http" then
                 loadstring(game:HttpGet(item.url))()
+                Library:Notify("Script is Execute", 4)
             else
                 loadstring(item.url)()
             end
@@ -673,6 +682,7 @@ for i, item in ipairs(list10) do
         Func = function()
             if item.url:sub(1, 4) == "http" then
                 loadstring(game:HttpGet(item.url))()
+                Library:Notify("Script is Execute", 4)
             else
                 loadstring(item.url)()
             end
@@ -792,5 +802,6 @@ seGroupBox:AddDivider()
 
 seGroupBox:AddLabel("logs update")
 
-seGroupBox:AddLabel("• new game tab")
-seGroupBox:AddLabel("• add 2 script")
+seGroupBox:AddLabel("• new game support")
+seGroupBox:AddLabel("• new 2 script")
+seGroupBox:AddLabel("• add Notify Execute script")

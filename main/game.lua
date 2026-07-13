@@ -145,6 +145,7 @@ local SubTab4 = LeftTabBox:AddTab("", "sailboat")
 local SubTab5 = LeftTabBox:AddTab("", "sport-shoe")
 local SubTab7 = LeftTabBox:AddTab("", "bird")
 local SubTab10 = LeftTabBox:AddTab("", "sprout")
+local SubTab11 = LeftTabBox:AddTab("", "moon")
 
 local RightTabBox = Tab1:AddRightTabbox("Right Tabbox")
 local SubTab8 = RightTabBox:AddTab("", "shield")
@@ -234,6 +235,11 @@ local list9 = {
     {name = "alchemy hub", url = "https://raw.githubusercontent.com/x2neptunereal/Alchemy/main/gateway.luau", auto_execute = false},
     {name = "lumin hub", url = "http://luminon.top/loader.lua", auto_execute = false},
     {name = "air flow hub", url = "https://airflowscript.com/loader", auto_execute = false},
+    {name = "foxname hub", url = "https://foxname.top/loader", auto_execute = false},
+}
+
+local list10 = {
+    {name = "voidware", url = "https://files.vapevoidware.xyz/VapeVoidware/VW-Add/main/loader.lua", auto_execute = false},
     {name = "foxname hub", url = "https://foxname.top/loader", auto_execute = false},
 }
 
@@ -651,6 +657,52 @@ for i, item in ipairs(list9) do
     SubTab10:AddDivider()
 end
 
+-- 99 night in the forest
+SubTab11:AddLabel("• 99 nitf hub")
+
+SubTab11:AddDivider()
+
+for i, item in ipairs(list10) do
+    local toggleName = "AutoExec_" .. item.name
+    local isAutoExec = SavedData[toggleName] or false
+
+    SubTab11:AddLabel(item.name)
+    
+    SubTab11:AddButton({
+        Text = "Load Script",
+        Func = function()
+            if item.url:sub(1, 4) == "http" then
+                loadstring(game:HttpGet(item.url))()
+            else
+                loadstring(item.url)()
+            end
+        end
+    })
+
+    local MyToggle = SubTab11:AddToggle(toggleName, {
+        Text = "Auto Execute",
+        Default = isAutoExec
+    })
+
+    MyToggle:OnChanged(function()
+        SaveConfig(toggleName, MyToggle.Value)
+    end)
+
+    if isAutoExec then
+        task.spawn(function()
+            pcall(function()
+                if item.url:sub(1, 4) == "http" then
+                    loadstring(game:HttpGet(item.url))()
+                else
+                    loadstring(item.url)()
+                end
+            end)
+        end)
+    end
+
+    SubTab11:AddDivider()
+end
+
 local Tab2 = Window:AddTab({
     Name = "Setting",
     Description = "Setting ui",
@@ -740,5 +792,5 @@ seGroupBox:AddDivider()
 
 seGroupBox:AddLabel("logs update")
 
-seGroupBox:AddLabel("• new 2 script Blox Fruit")
-seGroupBox:AddLabel("• remove code in Script")
+seGroupBox:AddLabel("• new game tab")
+seGroupBox:AddLabel("• add 2 script")

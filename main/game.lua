@@ -93,7 +93,7 @@ infoGroupBox:AddButton({
     Text = "Copy Discord",
     Func = function()
         local link = "https://discord.gg/dbE59H6grJ"
-        
+
         if setclipboard then
             setclipboard(link)
         elseif toclipboard then
@@ -195,6 +195,7 @@ local list2 = {
         auto_execute = false
     },
     {name = "gravity hub", url = "https://raw.githubusercontent.com/Dev-GravityHub/BloxFruit/refs/heads/main/Main.lua", auto_execute = false},
+    {name = "quantum hub", url = "https://raw.githubusercontent.com/Trustmenotcondom/QTONYX/refs/heads/main/QuantumOnyx.lua", auto_execute = false},
     {name = "Meo Lazy hub", url = "https://raw.githubusercontent.com/MeoLazy/Script/refs/heads/main/V1.lua", auto_execute = false},
     {name = "turbo lite hub", url = "https://raw.githubusercontent.com/TurboLite/Script/refs/heads/main/MainV2.lua", auto_execute = false},
 }
@@ -253,7 +254,7 @@ for i, item in ipairs(list) do
     local isAutoExec = SavedData[toggleName] or false
 
     SubTab1:AddLabel(item.name)
-    
+
     SubTab1:AddButton({
         Text = "Load Script",
         Func = function()
@@ -300,7 +301,7 @@ for i, item in ipairs(list1) do
     local isAutoExec = SavedData[toggleName] or false
 
     SubTab2:AddLabel(item.name)
-    
+
     SubTab2:AddButton({
         Text = "Load Script",
         Func = function()
@@ -347,7 +348,7 @@ for i, item in ipairs(list2) do
     local isAutoExec = SavedData[toggleName] or false
 
     SubTab3:AddLabel(item.name)
-    
+
     SubTab3:AddButton({
         Text = "Load Script",
         Func = function()
@@ -394,7 +395,7 @@ for i, item in ipairs(list3) do
     local isAutoExec = SavedData[toggleName] or false
 
     SubTab4:AddLabel(item.name)
-    
+
     SubTab4:AddButton({
         Text = "Load Script",
         Func = function()
@@ -441,7 +442,7 @@ for i, item in ipairs(list4) do
     local isAutoExec = SavedData[toggleName] or false
 
     SubTab5:AddLabel(item.name)
-    
+
     SubTab5:AddButton({
         Text = "Load Script",
         Func = function()
@@ -488,7 +489,7 @@ for i, item in ipairs(list6) do
     local isAutoExec = SavedData[toggleName] or false
 
     SubTab7:AddLabel(item.name)
-    
+
     SubTab7:AddButton({
         Text = "Load Script",
         Func = function()
@@ -535,7 +536,7 @@ for i, item in ipairs(list7) do
     local isAutoExec = SavedData[toggleName] or false
 
     SubTab8:AddLabel(item.name)
-    
+
     SubTab8:AddButton({
         Text = "Load Script",
         Func = function()
@@ -582,7 +583,7 @@ for i, item in ipairs(list8) do
     local isAutoExec = SavedData[toggleName] or false
 
     SubTab9:AddLabel(item.name)
-    
+
     SubTab9:AddButton({
         Text = "Load Script",
         Func = function()
@@ -629,7 +630,7 @@ for i, item in ipairs(list9) do
     local isAutoExec = SavedData[toggleName] or false
 
     SubTab10:AddLabel(item.name)
-    
+
     SubTab10:AddButton({
         Text = "Load Script",
         Func = function()
@@ -676,7 +677,7 @@ for i, item in ipairs(list10) do
     local isAutoExec = SavedData[toggleName] or false
 
     SubTab11:AddLabel(item.name)
-    
+
     SubTab11:AddButton({
         Text = "Load Script",
         Func = function()
@@ -754,12 +755,12 @@ local function doServerHop()
     local placeId = game.PlaceId
     local jobId = game.JobId
     local servers = {}
-    
+
     local success, result = pcall(function()
         local url = "https://games.roblox.com/v1/games/"..placeId.."/servers/Public?sortOrder=Asc&limit=100"
         return HttpService:JSONDecode(game:HttpGet(url))
     end)
-    
+
     if success and result and result.data then
         for _, s in ipairs(result.data) do
             if type(s) == "table" and s.playing < s.maxPlayers and s.id ~= jobId then
@@ -767,7 +768,7 @@ local function doServerHop()
             end
         end
     end
-    
+
     if #servers > 0 then
         local serverId = servers[math.random(1, #servers)]
         TeleportService:TeleportToPlaceInstance(placeId, serverId, player)

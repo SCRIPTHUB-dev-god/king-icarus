@@ -730,7 +730,7 @@ setGroupBox:AddButton({
         if Library then Library:Unload() end
         task.spawn(function()
             task.wait()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/game.lua",true))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/SCRIPTHUB-dev-god/king-icarus/refs/heads/script/main/game-hub.lua",true))()
         end)
     end
 })
